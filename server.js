@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
                         Get My Webhook URL
                     </button>
                 </form>
-                <p class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-6 font-large">No account sign-up or password required. Results delivered straight to your email.</p>
+                <p class="text-medium text-indigo-500 mt-4">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
             <footer class="text-center py-6 text-xs text-slate-600 border-t border-slate-900">
                 &copy; 2026 Sentnl. All rights reserved.
