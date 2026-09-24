@@ -222,10 +222,12 @@ app.post('/webhook/:secret', async (req, res) => {
 
                 // --- 4. System Failures, Integrations & Request Errors ---
                 /connection\s+timeout/i,            // "connection timeout"
+                /\btimed\s+out\b/i,                 // "timed out"
                 /validation\s+failed/i,             // "validation failed"
                 /zap\s+run\s+failed/i,              // "zap run failed"
                 /we\s+hit\s+an\s+error/i,           // "we hit an error"
                 /task\s+failed/i,                   // "task failed"
+                /failed\s+to\s+complete/i,          // "failed to complete"
                 /could\s+not\s+parse\s+request/i,   // "could not parse request"
                 /missing\s+required\s+scopes/i,     // "missing required scopes"
                 /\bapi\s+error\b/i,                 // "API Error"
