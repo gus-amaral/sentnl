@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
                         Get My Webhook URL
                     </button>
                 </form>
-                <p class="text-xs text-slate-500 mt-4">No dashboards or passwords. Results delivered straight to your email.</p>
+                <p class="text-xs text-slate-500 mt-4">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
             <footer class="text-center py-6 text-xs text-slate-600 border-t border-slate-900">
                 &copy; 2026 Sentnl. All rights reserved.
@@ -191,14 +191,33 @@ app.post('/webhook/:secret', async (req, res) => {
         else if (ruleType === 'no_apologies') {
             const textValue = String(fieldValue || '').toLowerCase();
             
-            const refusalPatterns = [
-                /\bsor+y\b/,                  // "sorry", "sorrry"
-                /apolog(?:y|ies|ize)/,        // "apology", "apologies", "apologize"
-                /i\s+cannot\b/,               // "i cannot"
-                /i\s+can't\b/,                // "i can't"
-                /as\s+an\s+ai\b/,             // "as an ai"
-                /i\s+am\s+unable\b/,          // "i am unable"
-                /rate\s+limit\s+exceeded/     // API rate limits
+           const refusalPatterns = [
+                // Standard refusals & apologies
+                /\bsor+y\b/i,                       // "sorry", "sorrry"
+                /apolog(?:y|ies|ize|izing)/i,       // "apology", "apologies", "apologize", "apologizing"
+                /\bi\s+can(?:'?t|\s+not)\b/i,       // "i cannot", "i can't", "I can not"
+                /\bi\s+could(?:'?t|\s+not)\b/i,     // "i couldn't", "i could not"
+                /\b(i\s+)?am\s+unable\b/i,          // "i am unable", "am unable"
+                /\bas\s+an\s+ai\b/i,                // "as an ai"
+                
+                // AI policy & capability restrictions
+                /policy\s+restrictions?/i,          // "policy restriction" / "policy restrictions"
+                /safety\s+guidelines?/i,            // "safety guideline" / "safety guidelines"
+                /against\s+my\s+guidelines/i,       // "against my guidelines"
+                /i\s+am\s+not\s+programmed\b/i,     // "i am not programmed"
+                /fulfill\s+this\s+request\b/i,      // "fulfill this request"
+                /ethical\s+boundaries?\b/i,         // "ethical boundaries"
+                /not\s+able\s+to\s+provide\b/i,      // "not able to provide"
+
+                // Infrastructure, Limits, Quotas & Billing Errors
+                /rate\s+limit\s+exceeded/i,         // API rate limits
+                /spend\s+limit/i,                   // "spend limit"
+                /spending\s+limits?\s+exceeded/i,   // "Spending Limits Exceeded"
+                /context\s+window\s+exceeded/i,     // "context window exceeded"
+                /token\s+limit/i,                   // "token limit"
+                /quota\s+exceeded/i,                // "quota exceeded"
+                /exceeded\s+your.*quota/i,          // "You exceeded your current quota"
+                /account\s+quota/i                  // "Account Quota"
             ];
             
             const matchedPattern = refusalPatterns.find(regex => regex.test(textValue));
