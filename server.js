@@ -35,7 +35,7 @@ app.get('/', (req, res) => {
         <body class="bg-slate-950 text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between">
             <div class="max-w-3xl mx-auto px-6 py-20 text-center">
                 <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-6 font-medium">
-                    Built for Zapier, Make, and AI Builders
+                    Built for Zapier, Make, n8n and custom AI Builders
                 </span>
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
                     Stop Finding Out Your Automations Broke When Your Client Complains.
@@ -120,11 +120,11 @@ app.post('/signup', async (req, res) => {
                     <h3 style="color: #f1f5f9; font-size: 16px; margin-bottom: 12px;">How to add it to your workflow:</h3>
                     
                     <ol style="padding-left: 20px; font-size: 14px; color: #cbd5e1; line-height: 1.6;">
-                        <li style="margin-bottom: 8px;">Open your Zapier, Make, or custom automation builder.</li>
+                        <li style="margin-bottom: 8px;">Open your Zapier, Make, n8n or custom automation builder.</li>
                         <li style="margin-bottom: 8px;">Add a new <strong>Action</strong> step at the very end of your pipeline.</li>
-                        <li style="margin-bottom: 8px;">Select <strong>Webhooks by Zapier</strong> (or <em>Custom Webhook</em> in Make) and choose <strong>POST</strong>.</li>
+                        <li style="margin-bottom: 8px;">Configure an <strong>HTTP POST</strong> request pointing to your Sentnl endpoint.</li>
                         <li style="margin-bottom: 8px;">Paste your unique Sentnl URL into the <strong>URL</strong> field.</li>
-                        <li style="margin-bottom: 8px;">Ensure your final step passes your AI text output under the key <code>output</code>.</li>
+                        <li style="margin-bottom: 8px;">Ensure your final step passes your AI final text output (payload) in the body.</li>
                     </ol>
                     
                     <p style="font-size: 12px; color: #64748b; margin-top: 24px;">Save this email! You can always reference this endpoint anytime.</p>
