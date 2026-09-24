@@ -101,7 +101,7 @@ app.post('/signup', async (req, res) => {
 
         // Send the onboarding email via Resend
         await resend.emails.send({
-            from: 'Sentnl <onboarding@resend.dev>',
+            from: 'Sentnl Alerts <alerts@sentnl.tech>',
             to: email,
             subject: 'Your Sentnl Webhook URL & Setup Guide',
             html: `
@@ -254,7 +254,7 @@ app.post('/webhook/:secret', async (req, res) => {
 
         if (status === 'failed') {
             await resend.emails.send({
-                from: 'Sentnl <onboarding@resend.dev>',
+                from: 'Sentnl Alerts <alerts@sentnl.tech>',
                 to: monitor.email,
                 subject: `🚨 Alert: AI Soft Failure Caught on "${monitor.name}"`,
                 html: `
