@@ -192,24 +192,25 @@ app.post('/webhook/:secret', async (req, res) => {
             const textValue = String(fieldValue || '').toLowerCase();
             
            const refusalPatterns = [
-                // Standard refusals & apologies
+                // --- 1. Standard Refusals & Apologies ---
                 /\bsor+y\b/i,                       // "sorry", "sorrry"
                 /apolog(?:y|ies|ize|izing)/i,       // "apology", "apologies", "apologize", "apologizing"
-                /\bi\s+can(?:'?t|\s+not)\b/i,       // "i cannot", "i can't", "I can not"
-                /\bi\s+could(?:'?t|\s+not)\b/i,     // "i couldn't", "i could not"
-                /\b(i\s+)?am\s+unable\b/i,          // "i am unable", "am unable"
+                /\b(?:i\s+)?can(?:'?t|\s+not)\b/i,  // "i can't", "can't", "i can not", "can not"
+                /\b(?:i\s+)?could(?:'?t|\s+not)\b/i,// "i couldn't", "couldn't", "i could not", "could not"
+                /\b(?:i\s+)?am\s+unable\b/i,        // "i am unable", "am unable"
                 /\bas\s+an\s+ai\b/i,                // "as an ai"
                 
-                // AI policy & capability restrictions
+                // --- 2. AI Policy & Capability Restrictions ---
                 /policy\s+restrictions?/i,          // "policy restriction" / "policy restrictions"
                 /safety\s+guidelines?/i,            // "safety guideline" / "safety guidelines"
                 /against\s+my\s+guidelines/i,       // "against my guidelines"
-                /i\s+am\s+not\s+programmed\b/i,     // "i am not programmed"
+                /\b(?:i\s+)?am\s+not\s+programmed\b/i, // "i am not programmed", "am not programmed"
                 /fulfill\s+this\s+request\b/i,      // "fulfill this request"
                 /ethical\s+boundaries?\b/i,         // "ethical boundaries"
                 /not\s+able\s+to\s+provide\b/i,      // "not able to provide"
+                /c(?:an|ould)\s+not\s+be\s+completed/i, // "could not be completed", "can not be completed"
 
-                // Infrastructure, Limits, Quotas & Billing Errors
+                // --- 3. Infrastructure, Limits, Quotas & Billing Errors ---
                 /rate\s+limit\s+exceeded/i,         // API rate limits
                 /spend\s+limit/i,                   // "spend limit"
                 /spending\s+limits?\s+exceeded/i,   // "Spending Limits Exceeded"
@@ -217,7 +218,19 @@ app.post('/webhook/:secret', async (req, res) => {
                 /token\s+limit/i,                   // "token limit"
                 /quota\s+exceeded/i,                // "quota exceeded"
                 /exceeded\s+your.*quota/i,          // "You exceeded your current quota"
-                /account\s+quota/i                  // "Account Quota"
+                /account\s+quota/i,                 // "Account Quota"
+
+                // --- 4. System Failures, Integrations & Request Errors ---
+                /connection\s+timeout/i,            // "connection timeout"
+                /validation\s+failed/i,             // "validation failed"
+                /zap\s+run\s+failed/i,              // "zap run failed"
+                /we\s+hit\s+an\s+error/i,           // "we hit an error"
+                /task\s+failed/i,                   // "task failed"
+                /could\s+not\s+parse\s+request/i,   // "could not parse request"
+                /missing\s+required\s+scopes/i,     // "missing required scopes"
+                /\bapi\s+error\b/i,                 // "API Error"
+                /invalid\s+json/i,                  // "invalid json"
+                /the\s+scenario\s+requires\s+your\s+attention/i // "The scenario requires your attention"
             ];
             
             const matchedPattern = refusalPatterns.find(regex => regex.test(textValue));
