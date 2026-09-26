@@ -301,6 +301,7 @@ app.post('/webhook/:secret', async (req, res) => {
                 /zap\s+run\s+failed/i,              // "zap run failed"
                 /we\s+hit\s+an\s+error/i,           // "we hit an error"
                 /task\s+failed/i,                   // "task failed"
+                /request\s+failed/i,                // "request failed"
                 /failed\s+to\s+complete/i,          // "failed to complete"
                 /could\s+not\s+parse\s+request/i,   // "could not parse request"
                 /missing\s+required\s+scopes/i,     // "missing required scopes"
