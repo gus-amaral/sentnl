@@ -31,6 +31,14 @@ app.get('/', (req, res) => {
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Sentnl - AI Automation & Payload Watcher</title>
             <script src="https://cdn.tailwindcss.com"></script>
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://googletagmanager.com"></script>
+            <script>
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-XXXXXXXXXX');
+            </script>
         </head>
         <body class="bg-slate-950 text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between">
             <div class="max-w-3xl mx-auto px-6 py-20 text-center">
@@ -93,7 +101,7 @@ app.post('/signup', async (req, res) => {
         if (!monitor) {
             const createMonitorQuery = `
                 INSERT INTO monitors (user_id, name, rule_type, target_field) 
-                VALUES ($1, 'Default Pipeline Monitor', 'not_empty', 'output')
+                VALUES ($1, 'Default Pipeline Monitor', 'no_apologies', 'output')
                 RETURNING *;
             `;
             const newMonitorRes = await pool.query(createMonitorQuery, [user.id]);
@@ -141,6 +149,14 @@ app.post('/signup', async (req, res) => {
             <head>
                 <meta charset="UTF-8">
                 <script src="https://cdn.tailwindcss.com"></script>
+                <!-- Google tag (gtag.js) -->
+                <script async src="https://googletagmanager.com"></script>
+                <script>
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', 'G-XXXXXXXXXX');
+                </script>
             </head>
             <body class="bg-slate-950 text-slate-100 flex items-center justify-center h-screen px-6">
                 <div class="max-w-md text-center bg-slate-900 border border-slate-800 p-8 rounded-2xl">
@@ -253,9 +269,9 @@ app.post('/webhook/:secret', async (req, res) => {
                 // --- 1. Standard Refusals & Apologies ---
                 /\bsor+y\b/i,                       // "sorry", "sorrry"
                 /apolog(?:y|ies|ize|izing)/i,       // "apology", "apologies", "apologize", "apologizing"
-                /\b(?:i\s+)?can(?:'?t|\s+not)\b/i,  // "i can't", "can't", "i can not", "can not"
-                /\b(?:i\s+)?could(?:'?t|\s+not)\b/i,// "i couldn't", "couldn't", "i could not", "could not"
-                /\b(?:i\s+)?am\s+unable\b/i,        // "i am unable", "am unable"
+                /\b(?:i\s+)?can(?:'?t|\s+not)\b/i,  // "i can't", "i can not", "i cannot"
+                /\b(?:i\s+)?could(?:'?t|\s+not)\b/i,// "i couldn't", "i could not"
+                /\b(?:i\s+)?am\s+unable\b/i,        // "i am unable", "I am not able"
                 /\bas\s+an\s+ai\b/i,                // "as an ai"
                 
                 // --- 2. AI Policy & Capability Restrictions ---
