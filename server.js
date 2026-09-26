@@ -83,7 +83,10 @@ app.post('/signup', async (req, res) => {
         const userResult = await pool.query(userQuery, [email]);
         const user = userResult.rows[0];
 
-        let monitorQuery = `SELECT * FROM monitors WHERE user_id = $1 LIMIT 1;`;
+        let monitorQuery = `SELECT monitors.*, users.email, users.id as user_id, users.tier, users.webhook_count, users.last_reset_at 
+                            FROM monitors 
+                            JOIN users ON monitors.user_id = users.id 
+                            WHERE monitors.webhook_secret = $1;`;
         let monitorResult = await pool.query(monitorQuery, [user.id]);
         let monitor = monitorResult.rows[0];
 
@@ -162,7 +165,7 @@ app.post('/webhook/:secret', async (req, res) => {
 
     try {
         const monitorQuery = `
-            SELECT monitors.*, users.email 
+            SELECT monitors.*, users.email, users.id as user_id, users.tier, users.webhook_count, users.last_reset_at 
             FROM monitors 
             JOIN users ON monitors.user_id = users.id 
             WHERE monitors.webhook_secret = $1;
@@ -174,6 +177,32 @@ app.post('/webhook/:secret', async (req, res) => {
         }
 
         const monitor = monitorResult.rows[0];
+
+// --- LAZY MONTHLY RESET & USAGE LIMIT CHECK ---
+        const now = new Date();
+        const lastReset = new Date(monitor.last_reset_at);
+
+        if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
+            await pool.query(
+                'UPDATE users SET webhook_count = 0, last_reset_at = NOW() WHERE id = $1',
+                [monitor.user_id]
+            );
+            monitor.webhook_count = 0;
+        }
+
+        const FREE_LIMIT = 500;
+        if (monitor.tier === 'free' && monitor.webhook_count >= FREE_LIMIT) {
+            return res.status(429).json({ 
+                error: 'Free tier limit reached (500/500). Please upgrade to continue receiving alerts.' 
+            });
+        }
+
+        await pool.query(
+            'UPDATE users SET webhook_count = webhook_count + 1 WHERE id = $1',
+            [monitor.user_id]
+        );
+        // ----------------------------------------------
+
         const targetField = monitor.target_field || 'output';
         const ruleType = monitor.rule_type || 'not_empty';
         const fieldValue = payload[targetField];
