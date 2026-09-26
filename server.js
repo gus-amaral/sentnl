@@ -83,7 +83,7 @@ app.post('/signup', async (req, res) => {
         const userResult = await pool.query(userQuery, [email]);
         const user = userResult.rows[0];
 
-        let monitorQuery = `SELECT monitors.*, users.email, users.id as user_id, users.tier, users.webhook_count, users.last_reset_at 
+        let monitorQuery = `SELECT monitors.*, users.email, users.id as user_id, users.tier, users.webhook_count, users.last_reset_at, users.limit_email_sent 
                             FROM monitors 
                             JOIN users ON monitors.user_id = users.id 
                             WHERE monitors.webhook_secret = $1;`;
@@ -165,7 +165,7 @@ app.post('/webhook/:secret', async (req, res) => {
 
     try {
         const monitorQuery = `
-            SELECT monitors.*, users.email, users.id as user_id, users.tier, users.webhook_count, users.last_reset_at 
+            SELECT monitors.*, users.email, users.id as user_id, users.tier, users.webhook_count, users.last_reset_at, users.limit_email_sent
             FROM monitors 
             JOIN users ON monitors.user_id = users.id 
             WHERE monitors.webhook_secret = $1;
@@ -178,30 +178,59 @@ app.post('/webhook/:secret', async (req, res) => {
 
         const monitor = monitorResult.rows[0];
 
-// --- LAZY MONTHLY RESET & USAGE LIMIT CHECK ---
+// 4. Check & do lazy monthly reset if needed (resets count AND the email flag)
         const now = new Date();
         const lastReset = new Date(monitor.last_reset_at);
 
         if (now.getMonth() !== lastReset.getMonth() || now.getFullYear() !== lastReset.getFullYear()) {
             await pool.query(
-                'UPDATE users SET webhook_count = 0, last_reset_at = NOW() WHERE id = $1',
+                'UPDATE users SET webhook_count = 0, limit_email_sent = FALSE, last_reset_at = NOW() WHERE id = $1',
                 [monitor.user_id]
             );
             monitor.webhook_count = 0;
+            monitor.limit_email_sent = false;
         }
 
+        // 2. Enforce Free Tier Limit (500 limit)
         const FREE_LIMIT = 500;
         if (monitor.tier === 'free' && monitor.webhook_count >= FREE_LIMIT) {
+            
+            // Send the limit alert email ONLY if it hasn't been sent yet this month
+            if (!monitor.limit_email_sent) {
+                await resend.emails.send({
+                    from: 'Sentnl Alerts <alerts@sentnl.tech>',
+                    to: monitor.email,
+                    subject: `⚠️ Action Required: Sentnl Free Tier Limit Reached`,
+                    html: `
+                        <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #18181b; color: #f8fafc; border-radius: 8px; border: 1px solid #f59e0b;">
+                            <h2 style="color: #f59e0b; margin-top: 0;">Free Tier Limit Reached 🛑</h2>
+                            <p>Your Sentnl pipeline monitor <strong>${monitor.name}</strong> has reached the 500 webhook calls limit for this month.</p>
+                            <p>Incoming workflow telemetry is currently paused until your counter resets next month or you upgrade your plan.</p>
+                            <div style="margin-top: 20px; padding: 12px; background: #27272a; border-radius: 6px; font-size: 13px; color: #fbbf24;">
+                                Total Processed: 500 / 500 calls
+                            </div>
+                        </div>
+                    `
+                });
+
+                // Mark flag as true in DB so we don't spam them on subsequent requests
+                await pool.query(
+                    'UPDATE users SET limit_email_sent = TRUE WHERE id = $1',
+                    [monitor.user_id]
+                );
+            }
+
             return res.status(429).json({ 
                 error: 'Free tier limit reached (500/500). Please upgrade to continue receiving alerts.' 
             });
         }
 
+        // 3. Increment usage counter normally if under the limit
         await pool.query(
             'UPDATE users SET webhook_count = webhook_count + 1 WHERE id = $1',
             [monitor.user_id]
         );
-        // ----------------------------------------------
+// ----------------------------------------------
 
         const targetField = monitor.target_field || 'output';
         const ruleType = monitor.rule_type || 'not_empty';
