@@ -39,22 +39,21 @@ app.get('/', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between">
-            <div class="max-w-3xl mx-auto px-6 py-16 text-center">
-                
-                <!-- Logo Header -->
-               
-                <div class="flex justify-center mb-8">
-                    <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-14 md:h-16 object-contain" />
-                </div>
+        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
+            <!-- Top Header with Left-Aligned Logo -->
+            <header class="w-full px-8 py-4">
+                <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-10 object-contain" />
+            </header>
 
-                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-6 font-medium">
+            <!-- Hero Content -->
+            <div class="max-w-3xl mx-auto px-6 py-6 text-center my-auto">
+                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-4 font-medium">
                     Built for Zapier, Make, n8n and custom AI Builders
                 </span>
-                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-6">
+                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
                     Stop Finding Out Your Automations Broke When Your Client Complains.
                 </h1>
-                <p class="text-lg text-slate-400 mb-10 max-w-xl mx-auto">
+                <p class="text-base md:text-lg text-slate-400 mb-8 max-w-xl mx-auto">
                     Drop a single webhook URL at the end of your workflow. We inspect your AI output payloads in real-time and email you the second something returns empty or broken.
                 </p>
 
@@ -64,18 +63,19 @@ app.get('/', (req, res) => {
                         name="email" 
                         required 
                         placeholder="Enter your work email..." 
-                        class="bg-[#131d31] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-4 py-3 rounded-lg text-slate-100 outline-none flex-1"
+                        class="bg-[#131d31] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-4 py-3 rounded-lg text-slate-100 outline-none flex-1 text-sm"
                     />
                     <button 
                         type="submit" 
-                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/20"
+                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/25 text-sm"
                     >
                         Get My Webhook URL
                     </button>
                 </form>
-                <p class="text-xs text-indigo-400 mt-4">No account sign-up or password required. Results delivered straight to your email.</p>
+                <p class="text-xs text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
-            <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
+
+            <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50">
                 &copy; 2026 Sentnl. All rights reserved.
             </footer>
         </body>
@@ -164,17 +164,21 @@ app.post('/signup', async (req, res) => {
                 gtag('config', 'G-5HQ8Q06EF6');
                 </script>
             </head>
-            <body class="bg-[#0e1626] text-slate-100 flex flex-col items-center justify-center h-screen px-6">
-                <div class="flex justify-center mb-8">
-                    <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-14 md:h-16 object-contain" />
-                </div>
-           
-                 <div class="max-w-md w-full text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl">
+            <body class="bg-[#0e1626] text-slate-100 flex flex-col justify-between min-h-screen m-0">
+                <header class="w-full px-8 py-4">
+                    <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-10 object-contain" />
+                </header>
+
+                <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
                     <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">✓</div>
                     <h2 class="text-2xl font-bold mb-2">Webhook URL Sent!</h2>
                     <p class="text-slate-400 text-sm mb-6">We've generated your unique endpoint and emailed it directly to <strong>${email}</strong>.</p>
                     <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Home</a>
                 </div>
+
+                <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50">
+                    &copy; 2026 Sentnl. All rights reserved.
+                </footer>
             </body>
             </html>
         `);
