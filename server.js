@@ -6,20 +6,19 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+app.use(express.static('public'));
+
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
 });
 
-
 const { Resend } = require('resend');
-// Split the key so GitHub scanner won't flag it as a secret
-const part1 = 're_NxAqHpCy'; // e.g. re_12345
-const part2 = '_ATxKTt8RRKBSdQpDcpEsEZpu';      // e.g. _abcde
+const part1 = 're_NxAqHpCy'; 
+const part2 = '_ATxKTt8RRKBSdQpDcpEsEZpu';      
 
 const resendApiKey = process.env.RESEND_API_KEY || (part1 + part2);
 const resend = new Resend(resendApiKey);
-
 
 // 1. Landing Page
 app.get('/', (req, res) => {
@@ -37,12 +36,18 @@ app.get('/', (req, res) => {
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
-
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-slate-950 text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between">
-            <div class="max-w-3xl mx-auto px-6 py-20 text-center">
+        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between">
+            <div class="max-w-3xl mx-auto px-6 py-16 text-center">
+                
+                <!-- Logo Header -->
+               
+                <div class="flex justify-center mb-8">
+                    <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-14 md:h-16 object-contain" />
+                </div>
+
                 <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-6 font-medium">
                     Built for Zapier, Make, n8n and custom AI Builders
                 </span>
@@ -59,7 +64,7 @@ app.get('/', (req, res) => {
                         name="email" 
                         required 
                         placeholder="Enter your work email..." 
-                        class="bg-slate-900 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-4 py-3 rounded-lg text-slate-100 outline-none flex-1"
+                        class="bg-[#131d31] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-4 py-3 rounded-lg text-slate-100 outline-none flex-1"
                     />
                     <button 
                         type="submit" 
@@ -68,9 +73,9 @@ app.get('/', (req, res) => {
                         Get My Webhook URL
                     </button>
                 </form>
-                <p class="text-medium text-indigo-500 mt-4">No account sign-up or password required. Results delivered straight to your email.</p>
+                <p class="text-xs text-indigo-400 mt-4">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
-            <footer class="text-center py-6 text-xs text-slate-600 border-t border-slate-900">
+            <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
                 &copy; 2026 Sentnl. All rights reserved.
             </footer>
         </body>
@@ -117,15 +122,15 @@ app.post('/signup', async (req, res) => {
             to: email,
             subject: 'Your Sentnl Webhook URL & Setup Guide',
             html: `
-                <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0f172a; color: #f8fafc; border-radius: 8px;">
+                <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px;">
                     <h2 style="color: #818cf8; margin-top: 0;">Your Sentnl Endpoint 🚀</h2>
                     <p>You're ready to start monitoring. Drop this webhook URL at the very end of your AI automation workflow:</p>
                     
-                    <div style="background: #1e293b; padding: 12px 16px; border-radius: 6px; border: 1px solid #334155; font-family: monospace; word-break: break-all; color: #38bdf8; margin: 16px 0;">
+                    <div style="background: #131d31; padding: 12px 16px; border-radius: 6px; border: 1px solid #334155; font-family: monospace; word-break: break-all; color: #38bdf8; margin: 16px 0;">
                         ${webhookUrl}
                     </div>
 
-                    <p style="font-size: 14px; color: #cbd5e1;"><strong>Current Rule:</strong> Alerts if the <code>output</code> field is empty or missing.</p>
+                    <p style="font-size: 14px; color: #cbd5e1;"><strong>Current Rule:</strong> Alerts if the <code>output</code> field is empty or triggers AI refusal patterns (<code>no_apologies</code>).</p>
 
                     <hr style="border: none; border-top: 1px solid #334155; margin: 24px 0;">
 
@@ -156,12 +161,15 @@ app.post('/signup', async (req, res) => {
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-
                 gtag('config', 'G-5HQ8Q06EF6');
                 </script>
             </head>
-            <body class="bg-slate-950 text-slate-100 flex items-center justify-center h-screen px-6">
-                <div class="max-w-md text-center bg-slate-900 border border-slate-800 p-8 rounded-2xl">
+            <body class="bg-[#0e1626] text-slate-100 flex flex-col items-center justify-center h-screen px-6">
+                <div class="flex justify-center mb-8">
+                    <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-14 md:h-16 object-contain" />
+                </div>
+           
+                 <div class="max-w-md w-full text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl">
                     <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">✓</div>
                     <h2 class="text-2xl font-bold mb-2">Webhook URL Sent!</h2>
                     <p class="text-slate-400 text-sm mb-6">We've generated your unique endpoint and emailed it directly to <strong>${email}</strong>.</p>
@@ -196,7 +204,7 @@ app.post('/webhook/:secret', async (req, res) => {
 
         const monitor = monitorResult.rows[0];
 
-// 4. Check & do lazy monthly reset if needed (resets count AND the email flag)
+        // 4. Check & do lazy monthly reset if needed
         const now = new Date();
         const lastReset = new Date(monitor.last_reset_at);
 
@@ -212,26 +220,23 @@ app.post('/webhook/:secret', async (req, res) => {
         // 2. Enforce Free Tier Limit (500 limit)
         const FREE_LIMIT = 500;
         if (monitor.tier === 'free' && monitor.webhook_count >= FREE_LIMIT) {
-            
-            // Send the limit alert email ONLY if it hasn't been sent yet this month
             if (!monitor.limit_email_sent) {
                 await resend.emails.send({
                     from: 'Sentnl Alerts <alerts@sentnl.tech>',
                     to: monitor.email,
                     subject: `⚠️ Action Required: Sentnl Free Tier Limit Reached`,
                     html: `
-                        <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #18181b; color: #f8fafc; border-radius: 8px; border: 1px solid #f59e0b;">
+                        <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px; border: 1px solid #f59e0b;">
                             <h2 style="color: #f59e0b; margin-top: 0;">Free Tier Limit Reached 🛑</h2>
                             <p>Your Sentnl pipeline monitor <strong>${monitor.name}</strong> has reached the 500 webhook calls limit for this month.</p>
                             <p>Incoming workflow telemetry is currently paused until your counter resets next month or you upgrade your plan.</p>
-                            <div style="margin-top: 20px; padding: 12px; background: #27272a; border-radius: 6px; font-size: 13px; color: #fbbf24;">
+                            <div style="margin-top: 20px; padding: 12px; background: #131d31; border-radius: 6px; font-size: 13px; color: #fbbf24;">
                                 Total Processed: 500 / 500 calls
                             </div>
                         </div>
                     `
                 });
 
-                // Mark flag as true in DB so we don't spam them on subsequent requests
                 await pool.query(
                     'UPDATE users SET limit_email_sent = TRUE WHERE id = $1',
                     [monitor.user_id]
@@ -243,12 +248,11 @@ app.post('/webhook/:secret', async (req, res) => {
             });
         }
 
-        // 3. Increment usage counter normally if under the limit
+        // 3. Increment usage counter
         await pool.query(
             'UPDATE users SET webhook_count = webhook_count + 1 WHERE id = $1',
             [monitor.user_id]
         );
-// ----------------------------------------------
 
         const targetField = monitor.target_field || 'output';
         const ruleType = monitor.rule_type || 'not_empty';
@@ -267,49 +271,42 @@ app.post('/webhook/:secret', async (req, res) => {
         else if (ruleType === 'no_apologies') {
             const textValue = String(fieldValue || '').toLowerCase();
             
-           const refusalPatterns = [
-                // --- 1. Standard Refusals & Apologies ---
-                /\bsor+y\b/i,                       // "sorry", "sorrry"
-                /apolog(?:y|ies|ize|izing)/i,       // "apology", "apologies", "apologize", "apologizing"
-                /\b(?:i\s+)?can(?:'?t|\s+not)\b/i,  // "i can't", "i can not", "i cannot"
-                /\b(?:i\s+)?could(?:'?t|\s+not)\b/i,// "i couldn't", "i could not"
-                /\b(?:i\s+)?am\s+unable\b/i,        // "i am unable", "I am not able"
-                /\bas\s+an\s+ai\b/i,                // "as an ai"
-                
-                // --- 2. AI Policy & Capability Restrictions ---
-                /policy\s+restrictions?/i,          // "policy restriction" / "policy restrictions"
-                /safety\s+guidelines?/i,            // "safety guideline" / "safety guidelines"
-                /against\s+my\s+guidelines/i,       // "against my guidelines"
-                /\b(?:i\s+)?am\s+not\s+programmed\b/i, // "i am not programmed", "am not programmed"
-                /fulfill\s+this\s+request\b/i,      // "fulfill this request"
-                /ethical\s+boundaries?\b/i,         // "ethical boundaries"
-                /not\s+able\s+to\s+provide\b/i,      // "not able to provide"
-                /c(?:an|ould)\s+not\s+be\s+completed/i, // "could not be completed", "can not be completed"
-
-                // --- 3. Infrastructure, Limits, Quotas & Billing Errors ---
-                /rate\s+limit\s+exceeded/i,         // API rate limits
-                /spend\s+limit/i,                   // "spend limit"
-                /spending\s+limits?\s+exceeded/i,   // "Spending Limits Exceeded"
-                /context\s+window\s+exceeded/i,     // "context window exceeded"
-                /token\s+limit/i,                   // "token limit"
-                /quota\s+exceeded/i,                // "quota exceeded"
-                /exceeded\s+your.*quota/i,          // "You exceeded your current quota"
-                /account\s+quota/i,                 // "Account Quota"
-
-                // --- 4. System Failures, Integrations & Request Errors ---
-                /connection\s+timeout/i,            // "connection timeout"
-                /\btimed\s+out\b/i,                 // "timed out"
-                /validation\s+failed/i,             // "validation failed"
-                /zap\s+run\s+failed/i,              // "zap run failed"
-                /we\s+hit\s+an\s+error/i,           // "we hit an error"
-                /task\s+failed/i,                   // "task failed"
-                /request\s+failed/i,                // "request failed"
-                /failed\s+to\s+complete/i,          // "failed to complete"
-                /could\s+not\s+parse\s+request/i,   // "could not parse request"
-                /missing\s+required\s+scopes/i,     // "missing required scopes"
-                /\bapi\s+error\b/i,                 // "API Error"
-                /invalid\s+json/i,                  // "invalid json"
-                /the\s+scenario\s+requires\s+your\s+attention/i // "The scenario requires your attention"
+            const refusalPatterns = [
+                /\bsor+y\b/i,
+                /apolog(?:y|ies|ize|izing)/i,
+                /\b(?:i\s+)?can(?:'?t|\s+not)\b/i,
+                /\b(?:i\s+)?could(?:'?t|\s+not)\b/i,
+                /\b(?:i\s+)?am\s+unable\b/i,
+                /\bas\s+an\s+ai\b/i,
+                /policy\s+restrictions?/i,
+                /safety\s+guidelines?/i,
+                /against\s+my\s+guidelines/i,
+                /\b(?:i\s+)?am\s+not\s+programmed\b/i,
+                /fulfill\s+this\s+request\b/i,
+                /ethical\s+boundaries?\b/i,
+                /not\s+able\s+to\s+provide\b/i,
+                /c(?:an|ould)\s+not\s+be\s+completed/i,
+                /rate\s+limit\s+exceeded/i,
+                /spend\s+limit/i,
+                /spending\s+limits?\s+exceeded/i,
+                /context\s+window\s+exceeded/i,
+                /token\s+limit/i,
+                /quota\s+exceeded/i,
+                /exceeded\s+your.*quota/i,
+                /account\s+quota/i,
+                /connection\s+timeout/i,
+                /\btimed\s+out\b/i,
+                /validation\s+failed/i,
+                /zap\s+run\s+failed/i,
+                /we\s+hit\s+an\s+error/i,
+                /task\s+failed/i,
+                /request\s+failed/i,
+                /failed\s+to\s+complete/i,
+                /could\s+not\s+parse\s+request/i,
+                /missing\s+required\s+scopes/i,
+                /\bapi\s+error\b/i,
+                /invalid\s+json/i,
+                /the\s+scenario\s+requires\s+your\s+attention/i
             ];
             
             const matchedPattern = refusalPatterns.find(regex => regex.test(textValue));
@@ -335,16 +332,16 @@ app.post('/webhook/:secret', async (req, res) => {
                 to: monitor.email,
                 subject: `🚨 Alert: AI Soft Failure Caught on "${monitor.name}"`,
                 html: `
-                    <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #18181b; color: #f8fafc; border-radius: 8px; border: 1px solid #ef4444;">
+                    <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px; border: 1px solid #ef4444;">
                         <h2 style="color: #ef4444; margin-top: 0;">AI Quality Guardrail Triggered ⚠️</h2>
                         <p>Rule type <strong>${ruleType}</strong> flagged a semantic soft failure.</p>
                         
-                        <div style="background: #27272a; padding: 12px 16px; border-radius: 6px; border: 1px solid #3f3f46; font-family: monospace; font-size: 13px; color: #fca5a5; margin: 16px 0; overflow-x: auto;">
+                        <div style="background: #131d31; padding: 12px 16px; border-radius: 6px; border: 1px solid #3f3f46; font-family: monospace; font-size: 13px; color: #fca5a5; margin: 16px 0; overflow-x: auto;">
                             ${errorMessage}
                         </div>
 
                         <p style="font-size: 13px; color: #a1a1aa;"><strong>Payload Received:</strong></p>
-                        <pre style="background: #27272a; padding: 12px; border-radius: 6px; font-size: 12px; color: #e4e4e7; overflow-x: auto;">${JSON.stringify(payload, null, 2)}</pre>
+                        <pre style="background: #131d31; padding: 12px; border-radius: 6px; font-size: 12px; color: #e4e4e7; overflow-x: auto;">${JSON.stringify(payload, null, 2)}</pre>
                     </div>
                 `
             });
