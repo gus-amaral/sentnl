@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
         <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
             <!-- Top Header with Left-Aligned Logo -->
             <header class="w-full px-8 py-4">
-                <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-10 object-contain" />
+                <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 object-contain" />
             </header>
 
             <!-- Hero Content -->
@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
                 <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-4 font-medium">
                     Built for Zapier, Make, n8n and custom AI Builders
                 </span>
-                <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
                     Stop Finding Out Your Automations Broke When Your Client Complains.
                 </h1>
                 <p class="text-base md:text-lg text-slate-400 mb-8 max-w-xl mx-auto">
@@ -166,7 +166,7 @@ app.post('/signup', async (req, res) => {
             </head>
             <body class="bg-[#0e1626] text-slate-100 flex flex-col justify-between min-h-screen m-0">
                 <header class="w-full px-8 py-4">
-                    <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-10 object-contain" />
+                    <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 object-contain" />
                 </header>
 
                 <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
