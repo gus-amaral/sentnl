@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
         <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
             <!-- Top Header with Left-Aligned Logo -->
             <header class="w-full px-8 py-4">
-                <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-10 object-contain" />
+                <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-10 object-contain" />
             </header>
 
             <!-- Hero Content -->
@@ -166,7 +166,7 @@ app.post('/signup', async (req, res) => {
             </head>
             <body class="bg-[#0e1626] text-slate-100 flex flex-col justify-between min-h-screen m-0">
                 <header class="w-full px-8 py-4">
-                    <img src="/logo_dark_background.jpg" alt="Sentnl Logo" class="h-10 object-contain" />
+                    <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-10 object-contain" />
                 </header>
 
                 <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
