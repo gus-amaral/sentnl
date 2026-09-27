@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
                 <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-4 font-medium">
                     Built for Zapier, Make, n8n and custom AI Builders
                 </span>
-                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
                     Stop Finding Out Your Automations Broke When Your Client Complains.
                 </h1>
                 <p class="text-base md:text-lg text-slate-400 mb-8 max-w-xl mx-auto">
