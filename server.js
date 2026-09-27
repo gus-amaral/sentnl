@@ -32,12 +32,13 @@ app.get('/', (req, res) => {
             <title>Sentnl - AI Automation & Payload Watcher</title>
             <script src="https://cdn.tailwindcss.com"></script>
             <!-- Google tag (gtag.js) -->
-            <script async src="https://googletagmanager.com"></script>
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
             <script>
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'G-XXXXXXXXXX');
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+
+            gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
         <body class="bg-slate-950 text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between">
@@ -150,12 +151,13 @@ app.post('/signup', async (req, res) => {
                 <meta charset="UTF-8">
                 <script src="https://cdn.tailwindcss.com"></script>
                 <!-- Google tag (gtag.js) -->
-                <script async src="https://googletagmanager.com"></script>
+                <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
                 <script>
-                  window.dataLayer = window.dataLayer || [];
-                  function gtag(){dataLayer.push(arguments);}
-                  gtag('js', new Date());
-                  gtag('config', 'G-XXXXXXXXXX');
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+
+                gtag('config', 'G-5HQ8Q06EF6');
                 </script>
             </head>
             <body class="bg-slate-950 text-slate-100 flex items-center justify-center h-screen px-6">
