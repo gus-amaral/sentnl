@@ -29,7 +29,6 @@ app.get('/', (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Sentnl - AI Automation & Payload Watcher</title>
-            <meta name="description" content="Monitor AI automations and detect broken or empty payloads before they impact your customers. Sentnl watches your workflows and alerts you when something goes wrong.">
             <script src="https://cdn.tailwindcss.com"></script>
             <!-- Google tag (gtag.js) -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
@@ -197,6 +196,22 @@ app.post('/signup', async (req, res) => {
                     </ol>
                     
                     <p style="font-size: 12px; color: #64748b; margin-top: 24px;">Save this email! You can always reference this endpoint anytime.</p>
+                </div>
+            `
+        });
+
+        // Send a notification email to contact@sentnl.tech about the new signup
+        await resend.emails.send({
+            from: 'Sentnl Alerts <alerts@sentnl.tech>',
+            to: 'contact@sentnl.tech',
+            subject: 'New User Signup on Sentnl',
+            html: `
+                <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px;">
+                    <h2 style="color: #818cf8; margin-top: 0;">New Signup 🚀</h2>
+                    <p>A new user just requested their webhook URL:</p>
+                    <div style="background: #131d31; padding: 12px 16px; border-radius: 6px; border: 1px solid #334155; font-family: monospace; color: #38bdf8; margin: 16px 0;">
+                        ${email}
+                    </div>
                 </div>
             `
         });
