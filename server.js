@@ -29,6 +29,7 @@ app.get('/', (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>Sentnl - AI Automation & Payload Watcher</title>
+            <meta name="description" content="Monitor AI automations and detect broken or empty payloads before they impact your customers. Sentnl watches your workflows and alerts you when something goes wrong.">
             <script src="https://cdn.tailwindcss.com"></script>
             <!-- Google tag (gtag.js) -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
