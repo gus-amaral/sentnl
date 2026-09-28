@@ -40,9 +40,12 @@ app.get('/', (req, res) => {
             </script>
         </head>
         <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
-            <!-- Top Header with Left-Aligned Logo -->
-            <header class="w-full px-8 py-4">
-                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" /></a>
+            <!-- Header with Logo and Visible Navigation Links -->
+            <header class="w-full px-8 py-4 flex justify-between items-center max-w-6xl mx-auto">
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 object-contain" /></a>
+                <nav class="flex items-center gap-6">
+                    <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
+                </nav>
             </header>
 
             <!-- Hero Content -->
@@ -75,10 +78,8 @@ app.get('/', (req, res) => {
                 <p class="text-xs text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
 
-            <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50 flex justify-center items-center gap-3">
+            <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
                 <span>&copy; 2026 Sentnl. All rights reserved.</span>
-                <span>•</span>
-                <a href="/contact" class="hover:text-slate-300 transition-colors">Contact</a>
             </footer>
         </body>
         </html>
@@ -105,8 +106,11 @@ app.get('/contact', (req, res) => {
             </script>
         </head>
         <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
-            <header class="w-full px-8 py-4">
-                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" /></a>
+            <header class="w-full px-8 py-4 flex justify-between items-center max-w-6xl mx-auto">
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 object-contain" /></a>
+                <nav class="flex items-center gap-6">
+                    <a href="/" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Home</a>
+                </nav>
             </header>
 
             <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
@@ -122,10 +126,8 @@ app.get('/contact', (req, res) => {
                 </div>
             </div>
 
-            <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50 flex justify-center items-center gap-3">
+            <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
                 <span>&copy; 2026 Sentnl. All rights reserved.</span>
-                <span>•</span>
-                <a href="/contact" class="hover:text-slate-300 transition-colors">Contact</a>
             </footer>
         </body>
         </html>
@@ -214,8 +216,11 @@ app.post('/signup', async (req, res) => {
                 </script>
             </head>
             <body class="bg-[#0e1626] text-slate-100 flex flex-col justify-between min-h-screen m-0">
-                <header class="w-full px-8 py-4">
-                    <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" /></a>
+                <header class="w-full px-8 py-4 flex justify-between items-center max-w-6xl mx-auto">
+                    <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 object-contain" /></a>
+                    <nav class="flex items-center gap-6">
+                        <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
+                    </nav>
                 </header>
 
                 <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
@@ -225,10 +230,8 @@ app.post('/signup', async (req, res) => {
                     <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Home</a>
                 </div>
 
-                <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50 flex justify-center items-center gap-3">
+                <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
                     <span>&copy; 2026 Sentnl. All rights reserved.</span>
-                    <span>•</span>
-                    <a href="/contact" class="hover:text-slate-300 transition-colors">Contact</a>
                 </footer>
             </body>
             </html>
