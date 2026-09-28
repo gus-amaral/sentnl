@@ -72,7 +72,7 @@ app.get('/', (req, res) => {
                         Get My Webhook URL
                     </button>
                 </form>
-                <p class="text-xs text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
+                <p class="text-s text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
 
             <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50">
