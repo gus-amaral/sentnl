@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
         <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
             <!-- Top Header with Left-Aligned Logo -->
             <header class="w-full px-8 py-4">
-                <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" />
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" /></a>
             </header>
 
             <!-- Hero Content -->
@@ -72,18 +72,67 @@ app.get('/', (req, res) => {
                         Get My Webhook URL
                     </button>
                 </form>
-                <p class="text-s text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
+                <p class="text-xs text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
 
-            <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50">
-                &copy; 2026 Sentnl. All rights reserved.
+            <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50 flex justify-center items-center gap-3">
+                <span>&copy; 2026 Sentnl. All rights reserved.</span>
+                <span>•</span>
+                <a href="/contact" class="hover:text-slate-300 transition-colors">Contact</a>
             </footer>
         </body>
         </html>
     `);
 });
 
-// 2. Signup Endpoint (Handles user creation, default monitor, and onboarding email)
+// 2. Contact Page
+app.get('/contact', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Contact Us - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+            <!-- Google tag (gtag.js) -->
+            <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
+            <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-5HQ8Q06EF6');
+            </script>
+        </head>
+        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
+            <header class="w-full px-8 py-4">
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" /></a>
+            </header>
+
+            <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
+                <h1 class="text-3xl font-extrabold mb-3">Get in Touch</h1>
+                <p class="text-slate-400 text-sm mb-6">
+                    Have questions, feature requests, or need help integrating a webhook into your workflow? Reach out to us directly at:
+                </p>
+                <a href="mailto:contact@sentnl.tech" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-lg shadow-indigo-600/25 text-sm mb-6">
+                    contact@sentnl.tech
+                </a>
+                <div>
+                    <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Home</a>
+                </div>
+            </div>
+
+            <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50 flex justify-center items-center gap-3">
+                <span>&copy; 2026 Sentnl. All rights reserved.</span>
+                <span>•</span>
+                <a href="/contact" class="hover:text-slate-300 transition-colors">Contact</a>
+            </footer>
+        </body>
+        </html>
+    `);
+});
+
+// 3. Signup Endpoint (Handles user creation, default monitor, and onboarding email)
 app.post('/signup', async (req, res) => {
     const { email } = req.body;
 
@@ -166,7 +215,7 @@ app.post('/signup', async (req, res) => {
             </head>
             <body class="bg-[#0e1626] text-slate-100 flex flex-col justify-between min-h-screen m-0">
                 <header class="w-full px-8 py-4">
-                    <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" />
+                    <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-16 object-contain" /></a>
                 </header>
 
                 <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
@@ -176,8 +225,10 @@ app.post('/signup', async (req, res) => {
                     <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Home</a>
                 </div>
 
-                <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50">
-                    &copy; 2026 Sentnl. All rights reserved.
+                <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-900/50 flex justify-center items-center gap-3">
+                    <span>&copy; 2026 Sentnl. All rights reserved.</span>
+                    <span>•</span>
+                    <a href="/contact" class="hover:text-slate-300 transition-colors">Contact</a>
                 </footer>
             </body>
             </html>
@@ -188,7 +239,7 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-// 3. CORE WEBHOOK VALIDATION ENGINE (Regex Semantic Matching)
+// 4. CORE WEBHOOK VALIDATION ENGINE (Regex Semantic Matching)
 app.post('/webhook/:secret', async (req, res) => {
     const { secret } = req.params;
     const payload = req.body;
@@ -208,7 +259,7 @@ app.post('/webhook/:secret', async (req, res) => {
 
         const monitor = monitorResult.rows[0];
 
-        // 4. Check & do lazy monthly reset if needed
+        // Check & do lazy monthly reset if needed
         const now = new Date();
         const lastReset = new Date(monitor.last_reset_at);
 
@@ -221,7 +272,7 @@ app.post('/webhook/:secret', async (req, res) => {
             monitor.limit_email_sent = false;
         }
 
-        // 2. Enforce Free Tier Limit (500 limit)
+        // Enforce Free Tier Limit (500 limit)
         const FREE_LIMIT = 500;
         if (monitor.tier === 'free' && monitor.webhook_count >= FREE_LIMIT) {
             if (!monitor.limit_email_sent) {
@@ -252,7 +303,7 @@ app.post('/webhook/:secret', async (req, res) => {
             });
         }
 
-        // 3. Increment usage counter
+        // Increment usage counter
         await pool.query(
             'UPDATE users SET webhook_count = webhook_count + 1 WHERE id = $1',
             [monitor.user_id]
