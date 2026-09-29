@@ -34,7 +34,9 @@ const renderHeader = () => `
             <a href="/privacy-terms" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
+        <!-- TEMPORARILY DISABLED SIGN IN:
         <a href="/login" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Sign In</a>
+        -->
     </header>
 `;
 
