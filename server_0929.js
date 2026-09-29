@@ -21,7 +21,6 @@ const resendApiKey = process.env.RESEND_API_KEY || (part1 + part2);
 const resend = new Resend(resendApiKey);
 
 // 1. Landing Page
-// 1. Landing Page
 app.get('/', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -50,7 +49,7 @@ app.get('/', (req, res) => {
             </header>
 
             <!-- Hero Content -->
-            <div class="max-w-4xl mx-auto px-6 py-8 text-center my-auto">
+            <div class="max-w-3xl mx-auto px-6 py-6 text-center my-auto">
                 <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-4 font-medium">
                     Built for Zapier, Make, n8n and custom AI Builders
                 </span>
@@ -61,7 +60,7 @@ app.get('/', (req, res) => {
                     Drop a single webhook URL at the end of your workflow. We inspect your AI output payloads in real-time and email you the second something returns empty or broken.
                 </p>
 
-                <form action="/signup" method="POST" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-4">
+                <form action="/signup" method="POST" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
                     <input 
                         type="email" 
                         name="email" 
@@ -76,56 +75,7 @@ app.get('/', (req, res) => {
                         Get My Webhook URL
                     </button>
                 </form>
-                
-                <!-- Clear Free Tier Messaging -->
-                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-medium mb-12">
-                    <span>✨ Free Tier: Up to 500 transactions/month • No expiry • No credit card required</span>
-                </div>
-
-                <!-- Simple Pricing Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left max-w-3xl mx-auto mt-4">
-                    <div class="bg-[#131d31] border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Free</span>
-                            <div class="text-2xl font-bold mt-1 mb-3">$0 <span class="text-xs text-slate-400 font-normal">/month</span></div>
-                            <p class="text-xs text-slate-400 mb-4">Perfect for trying out pipeline monitoring.</p>
-                            <ul class="text-xs text-slate-300 space-y-2 mb-6">
-                                <li class="flex items-center gap-2">✓ 1 Active Monitor</li>
-                                <li class="flex items-center gap-2">✓ Up to 500 transactions/mo</li>
-                                <li class="flex items-center gap-2">✓ No expiry</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="bg-[#131d31] border border-indigo-500/50 p-6 rounded-xl flex flex-col justify-between relative shadow-lg shadow-indigo-600/10">
-                        <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] uppercase font-bold tracking-wider px-3 py-0.5 rounded-full">
-                            Popular
-                        </div>
-                        <div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Tier 1</span>
-                            <div class="text-2xl font-bold mt-1 mb-3">$29 <span class="text-xs text-slate-400 font-normal">/month</span></div>
-                            <p class="text-xs text-slate-400 mb-4">For active builders and growing automations.</p>
-                            <ul class="text-xs text-slate-300 space-y-2 mb-6">
-                                <li class="flex items-center gap-2">✓ Up to 5 Monitors</li>
-                                <li class="flex items-center gap-2">✓ Up to 10,000 transactions/mo</li>
-                                <li class="flex items-center gap-2">✓ Real-time error alerts</li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="bg-[#131d31] border border-slate-800 p-6 rounded-xl flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Tier 2</span>
-                            <div class="text-2xl font-bold mt-1 mb-3">$49 <span class="text-xs text-slate-400 font-normal">/month</span></div>
-                            <p class="text-xs text-slate-400 mb-4">For agencies and high-volume workflows.</p>
-                            <ul class="text-xs text-slate-300 space-y-2 mb-6">
-                                <li class="flex items-center gap-2">✓ Unlimited Monitors</li>
-                                <li class="flex items-center gap-2">✓ Unlimited transactions</li>
-                                <li class="flex items-center gap-2">✓ Priority processing</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
+                <p class="text-xs text-indigo-400 mt-3">No account sign-up or password required. Results delivered straight to your email.</p>
             </div>
 
             <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
