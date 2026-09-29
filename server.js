@@ -133,8 +133,7 @@ app.get('/how-it-works', (req, res) => {
                 </div>
 
                 <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">What We Detect & Catch</h3>
-                <p class="text-slate-300 text-xs leading-relaxed mb-2">Sentnl goes beyond simple server downtime checks by performing semantic validations on your JSON payloads:</p>
-                <ul class="list-disc pl-5 text-slate-300 text-xs space-y-2 mb-4">
+                 <ul class="list-disc pl-5 text-slate-300 text-xs space-y-2 mb-4">
                     <li><strong>Empty / Missing Outputs:</strong> Instantly catches cases where your LLM returns a blank response or the target text field is missing.</li>
                     <li><strong>AI Refusal Patterns ("No-Apologies" Rule):</strong> Automatically scans text responses for common model guardrail failures, software limits, or safety refusals (e.g., phrases like <em>"As an AI..."</em>, <em>"I am unable to fulfill..."</em>, token limits exceeded, or API errors).</li>
                     <li><strong>Instant Alerting:</strong> Triggers an immediate notification email containing the exact payload and error message so you can diagnose issues quickly.</li>
