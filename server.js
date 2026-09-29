@@ -33,7 +33,7 @@ const renderHeader = () => `
     </header>
 `;
 
-// 1. Landing Page (Home)
+// 1. Landing Page (Home - Repositioned for Agencies & Client-Facing Builders)
 app.get('/', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -41,7 +41,7 @@ app.get('/', (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Sentnl - AI Automation & Payload Watcher</title>
+            <title>Sentnl - AI Workflow & Client Retainer Watcher</title>
             <script src="https://cdn.tailwindcss.com"></script>
             <!-- Google tag (gtag.js) -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
@@ -52,19 +52,19 @@ app.get('/', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
             ${renderHeader()}
 
             <!-- Hero Content -->
-            <div class="max-w-3xl mx-auto px-6 py-2 text-center my-auto">
+            <div class="max-w-4xl mx-auto px-6 py-8 text-center my-auto">
                 <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-sm px-4 py-1.5 rounded-full mb-4 font-semibold">
-                    Built for Zapier, Make, n8n and custom AI Builders
+                    Built for AI Agencies, Freelancers, & Automation Builders
                 </span>
-                <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
-                    Stop Finding Out Your Automations Broke When Your Client Complains.
+                <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mb-4 leading-tight">
+                    Protect Your Client Retainers From Silent AI Failures.
                 </h1>
                 <p class="text-base md:text-lg text-slate-400 mb-8 max-w-xl mx-auto">
-                    Drop a single webhook URL at the end of your workflow. We inspect your AI output payloads in real-time and email you the second something returns empty or broken.
+                    When your client's automated AI workflows break or return empty responses, you shouldn't have to find out from an angry email. Catch soft failures instantly before your reputation takes a hit.
                 </p>
 
                 <form action="/signup" method="POST" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
@@ -83,9 +83,25 @@ app.get('/', (req, res) => {
                     </button>
                 </form>
                 
-                <!-- Larger Free Tier Messaging -->
-                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-5 py-2.5 rounded-full text-sm font-semibold">
-                    <span>✨ Free Tier: Up to 500 transactions/month • No expiry • No credit card required</span>
+                <!-- Free Tier Messaging -->
+                <div class="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 px-5 py-2 rounded-full text-xs font-semibold mb-10">
+                    <span>✨ Free Tier: Monitor up to 500 client transactions/month • No credit card required</span>
+                </div>
+
+                <!-- Sub-Hero Value Pillars Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left text-xs max-w-3xl mx-auto">
+                    <div class="bg-[#131d31] p-4 rounded-xl border border-slate-800 shadow-lg">
+                        <div class="text-indigo-400 font-bold text-sm mb-1">🛡️ Built for Client Deliverables</div>
+                        <p class="text-slate-400 leading-relaxed">Keep client retainers running smoothly without spending hours building custom monitoring scripts.</p>
+                    </div>
+                    <div class="bg-[#131d31] p-4 rounded-xl border border-slate-800 shadow-lg">
+                        <div class="text-indigo-400 font-bold text-sm mb-1">🚨 Instant Client-Risk Alerts</div>
+                        <p class="text-slate-400 leading-relaxed">Catch empty blocks, token limits, and LLM "no-apologies" refusals before your client notices a dip.</p>
+                    </div>
+                    <div class="bg-[#131d31] p-4 rounded-xl border border-slate-800 shadow-lg">
+                        <div class="text-indigo-400 font-bold text-sm mb-1">⏱️ 30-Second Setup</div>
+                        <p class="text-slate-400 leading-relaxed">Paste a single webhook at the end of your Make or Zapier scenario. No extra database required.</p>
+                    </div>
                 </div>
             </div>
 
