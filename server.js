@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+        <body class="text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
             <!-- Hero Content -->
@@ -106,7 +106,7 @@ app.get('/how-it-works', (req, res) => {
             <title>How It Works - Sentnl</title>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
-        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+        <body class="text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
             <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#131d31] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
@@ -164,7 +164,7 @@ app.get('/privacy-terms', (req, res) => {
             <title>Privacy Policy - Sentnl</title>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
-        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+        <body class="text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
             <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#131d31] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
@@ -268,7 +268,7 @@ app.get('/contact', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+        <body class="text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
             <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
@@ -362,7 +362,7 @@ app.post('/signup', async (req, res) => {
                 <meta charset="UTF-8">
                 <script src="https://cdn.tailwindcss.com"></script>
             </head>
-            <body class="bg-[#122239] text-slate-100 flex flex-col justify-between h-screen m-0 overflow-hidden">
+            <body class="text-slate-100 flex flex-col justify-between h-screen m-0 overflow-hidden">
                 ${renderHeader()}
 
                 <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
