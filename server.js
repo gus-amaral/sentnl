@@ -39,10 +39,10 @@ app.get('/', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             <!-- Header with Logo and Visible Navigation Links -->
             <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
-                <a href="/"><img src="/logo_transparent_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
                 <nav class="flex items-center gap-6">
                     <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
                 </nav>
@@ -107,9 +107,9 @@ app.get('/contact', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
-            <header class="w-full px-8 py-4 flex justify-between items-center max-w-6xl mx-auto">
-                <a href="/"><img src="/logo_transparent_background.png" alt="Sentnl Logo" class="h-14 object-contain" /></a>
+        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+            <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
                 <nav class="flex items-center gap-6">
                     <a href="/" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Home</a>
                 </nav>
@@ -128,9 +128,7 @@ app.get('/contact', (req, res) => {
                 </div>
             </div>
 
-            <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
-                <span>&copy; 2026 Sentnl. All rights reserved.</span>
-            </footer>
+            <div class="py-2"></div>
         </body>
         </html>
     `);
@@ -233,9 +231,9 @@ app.post('/signup', async (req, res) => {
                 gtag('config', 'G-5HQ8Q06EF6');
                 </script>
             </head>
-            <body class="bg-[#0e1626] text-slate-100 flex flex-col justify-between min-h-screen m-0">
-                <header class="w-full px-8 py-4 flex justify-between items-center max-w-6xl mx-auto">
-                    <a href="/"><img src="/logo_transparent_background.png" alt="Sentnl Logo" class="h-14 object-contain" /></a>
+            <body class="bg-[#122239] text-slate-100 flex flex-col justify-between h-screen m-0 overflow-hidden">
+                <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
+                    <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
                     <nav class="flex items-center gap-6">
                         <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
                     </nav>
@@ -248,9 +246,7 @@ app.post('/signup', async (req, res) => {
                     <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Home</a>
                 </div>
 
-                <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
-                    <span>&copy; 2026 Sentnl. All rights reserved.</span>
-                </footer>
+                <div class="py-2"></div>
             </body>
             </html>
         `);
