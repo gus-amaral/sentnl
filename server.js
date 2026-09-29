@@ -107,7 +107,7 @@ app.get('/', (req, res) => {
                     </div>
                     <div class="bg-[#131d31] p-4 rounded-xl border border-slate-800 shadow-lg">
                         <div class="text-indigo-400 font-bold text-sm mb-1">⏱️ 5-minute Setup</div>
-                        <p class="text-slate-400 leading-relaxed">Paste a single webhook at the end of your Make or Zapier scenario. No extra database required.</p>
+                        <p class="text-slate-400 leading-relaxed">Paste a single webhook at the end of your AI workflow (Make, Zapier, n8n etc). No extra database required.</p>
                     </div>
                 </div>
             </div>
