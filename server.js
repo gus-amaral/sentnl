@@ -39,18 +39,18 @@ app.get('/', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col min-h-screen justify-between m-0">
+        <body class="bg-[#0e1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             <!-- Header with Logo and Visible Navigation Links -->
-            <header class="w-full px-8 py-4 flex justify-between items-center max-w-6xl mx-auto">
-                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 object-contain" /></a>
+            <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
+                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
                 <nav class="flex items-center gap-6">
                     <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
                 </nav>
             </header>
 
             <!-- Hero Content -->
-            <div class="max-w-3xl mx-auto px-6 py-6 text-center my-auto">
-                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-4 font-medium">
+            <div class="max-w-3xl mx-auto px-6 py-2 text-center my-auto">
+                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-sm px-4 py-1.5 rounded-full mb-4 font-semibold">
                     Built for Zapier, Make, n8n and custom AI Builders
                 </span>
                 <h1 class="text-4xl md:text-6xl font-extrabold tracking-tight mb-4">
@@ -82,9 +82,7 @@ app.get('/', (req, res) => {
                 </div>
             </div>
 
-            <footer class="text-center py-6 text-xs text-slate-500 border-t border-slate-900/50">
-                <span>&copy; 2026 Sentnl. All rights reserved.</span>
-            </footer>
+            <div class="py-2"></div>
         </body>
         </html>
     `);
