@@ -109,7 +109,7 @@ app.get('/how-it-works', (req, res) => {
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
-            <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#131d31] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
+            <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#0E1626] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
                 <h1 class="text-2xl font-extrabold mb-1 text-center">How Sentnl Works</h1>
                 <p class="text-slate-400 text-xs mb-6 text-center">Real-time monitoring and quality guardrails for your AI workflows</p>
                 
@@ -167,7 +167,7 @@ app.get('/privacy-terms', (req, res) => {
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
-            <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#131d31] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
+            <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#0E1626] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
                 <h1 class="text-2xl font-extrabold mb-1">Privacy Policy</h1>
                 <p class="text-slate-400 text-xs mb-6">Last updated: September 29, 2026</p>
                 
@@ -271,7 +271,7 @@ app.get('/contact', (req, res) => {
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
             ${renderHeader()}
 
-            <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
+            <div class="max-w-md w-full mx-auto text-center bg-[#0E1626] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
                 <h1 class="text-3xl font-extrabold mb-3">Get in Touch</h1>
                 <p class="text-slate-400 text-sm mb-6">
                     Have questions, feature requests, or need help integrating a webhook into your workflow? Reach out to us directly at:
