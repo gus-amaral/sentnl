@@ -178,8 +178,7 @@ app.get('/privacy-terms', (req, res) => {
                 <ul class="list-disc pl-5 text-slate-300 text-xs space-y-2 mb-4">
                     <li><strong>Email address:</strong> When you create a Sentnl webhook, we collect the email address you provide. We use it to send monitoring and alert notifications, provide service-related communications, and respond to support requests.</li>
                     <li><strong>Webhook data:</strong> When you send information to a Sentnl webhook, we may temporarily process and store the data contained in the webhook request in order to monitor your workflow and determine whether an alert should be generated. You are responsible for ensuring that information sent to Sentnl is appropriate for the service and does not contain information that you are not authorized to share.</li>
-                    <li><strong>Technical information:</strong> We may automatically collect limited technical information, such as IP address, timestamps, request information, browser information, and service logs. We use this information to operate, secure, troubleshoot, and improve Sentnl.</li>
-                </ul>
+                 </ul>
 
                 <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">2. How We Use Information</h3>
                 <p class="text-slate-300 text-xs leading-relaxed mb-2">We use collected information to:</p>
@@ -192,7 +191,7 @@ app.get('/privacy-terms', (req, res) => {
                     <li>Understand service usage and improve the product</li>
                     <li>Comply with applicable legal obligations</li>
                 </ul>
-                <p class="text-slate-300 text-xs leading-relaxed mb-4">We do not sell your personal information.</p>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4"><strong>We do not sell your personal information.</strong></p>
 
                 <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">3. Webhook Data</h3>
                 <p class="text-slate-300 text-xs leading-relaxed mb-4">
