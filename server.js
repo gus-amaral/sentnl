@@ -21,6 +21,9 @@ const part2 = '_ATxKTt8RRKBSdQpDcpEsEZpu';
 const resendApiKey = process.env.RESEND_API_KEY || (part1 + part2);
 const resend = new Resend(resendApiKey);
 
+// 👉 Place BASE_URL right here with your other config constants. Update ENV to https://sentnl.tech later
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+
 // Shared Header Component with Centered White Menu Links
 const renderHeader = () => `
     <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
@@ -333,7 +336,7 @@ app.post('/signup', async (req, res) => {
             monitor = newMonitorRes.rows[0];
         }
 
-        const webhookUrl = `http://localhost:3000/webhook/${monitor.webhook_secret}`;
+        const webhookUrl = `${BASE_URL}/webhook/${monitor.webhook_secret}`;
 
         // Send onboarding email
         await resend.emails.send({
@@ -596,7 +599,7 @@ app.post('/login', async (req, res) => {
                 [user.id, token, expiresAt]
             );
 
-            const loginUrl = `http://localhost:3000/auth/verify?token=${token}`;
+            const loginUrl = `${BASE_URL}/auth/verify?token=${token}`;
 
             await resend.emails.send({
                 from: 'Sentnl Alerts <alerts@sentnl.tech>',
@@ -642,7 +645,19 @@ app.post('/login', async (req, res) => {
     }
 });
 
-// 9. Verify Magic Token & Login
+// Helper to parse cookies easily without extra packages
+function parseCookies(req) {
+    const list = {};
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) return list;
+    cookieHeader.split(';').forEach(cookie => {
+        const parts = cookie.split('=');
+        list[parts.shift().trim()] = decodeURI(parts.join('='));
+    });
+    return list;
+}
+
+// 9. Verify Magic Token & Login (Updated to establish session)
 app.get('/auth/verify', async (req, res) => {
     const { token } = req.query;
 
@@ -674,27 +689,202 @@ app.get('/auth/verify', async (req, res) => {
 
         const magicToken = tokenResult.rows[0];
 
-        // Mark token as used so it can't be replayed
+        // Mark token as used
         await pool.query('UPDATE magic_tokens SET used = TRUE WHERE id = $1', [magicToken.id]);
 
-        // For now, let's redirect them to a placeholder dashboard route or drop a success message 
-        // while we build out the full multi-monitor dashboard UI next!
+        // Create a session token (valid for 30 days)
+        const sessionToken = crypto.randomBytes(32).toString('hex');
+        const sessionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+        await pool.query(
+            'INSERT INTO sessions (user_id, session_token, expires_at) VALUES ($1, $2, $3)',
+            [magicToken.user_id, sessionToken, sessionExpires]
+        );
+
+        // Set secure cookie and redirect to dashboard
+        res.cookie('sentnl_session', sessionToken, {
+            httpOnly: true,
+            secure: false, // set to true if using HTTPS in production
+            maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+
+        res.redirect('/dashboard');
+
+    } catch (err) {
+        console.error('Token verification error:', err);
+        res.status(500).send('Internal server error during authentication.');
+    }
+});
+
+// 10. Agency Dashboard Route
+app.get('/dashboard', async (req, res) => {
+    const cookies = parseCookies(req);
+    const sessionToken = cookies.sentnl_session;
+
+    if (!sessionToken) {
+        return res.redirect('/login');
+    }
+
+    try {
+        // Authenticate session
+        const sessionResult = await pool.query(
+            `SELECT users.* FROM sessions 
+             JOIN users ON sessions.user_id = users.id 
+             WHERE sessions.session_token = $1 AND sessions.expires_at > NOW()`,
+            [sessionToken]
+        );
+
+        if (sessionResult.rows.length === 0) {
+            return res.redirect('/login');
+        }
+
+        const user = sessionResult.rows[0];
+
+        // Fetch all monitors for this user
+        const monitorsResult = await pool.query(
+            'SELECT * FROM monitors WHERE user_id = $1 ORDER BY id DESC',
+            [user.id]
+        );
+        const monitors = monitorsResult.rows.rows || monitorsResult.rows;
+
+        const tierLimits = { free: 500, agency: 10000, scale: 50000 };
+        const maxLimit = tierLimits[user.tier] || 500;
+        const usagePercent = Math.min(Math.round((user.webhook_count / maxLimit) * 100), 100);
+
         res.send(`
             <!DOCTYPE html>
             <html lang="en">
-            <head><script src="https://cdn.tailwindcss.com"></script></head>
-            <body class="bg-[#0E1626] text-slate-100 flex items-center justify-center h-screen m-0">
-                <div class="text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl max-w-md">
-                    <h2 class="text-2xl font-bold text-emerald-400 mb-2">Successfully Logged In! 🎉</h2>
-                    <p class="text-slate-400 text-sm mb-4">You are authenticated. Next, we will render your multi-client dashboard here.</p>
-                </div>
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Dashboard - Sentnl</title>
+                <script src="https://cdn.tailwindcss.com"></script>
+            </head>
+            <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
+                ${renderHeader()}
+
+                <main class="max-w-4xl w-full mx-auto px-6 py-8 my-auto">
+                    <!-- Top Bar: Account & Tier -->
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#131d31] border border-slate-800 p-6 rounded-2xl shadow-xl mb-6 gap-4">
+                        <div>
+                            <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold">Logged in as</span>
+                            <div class="text-lg font-bold text-white">${user.email}</div>
+                        </div>
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <span class="text-xs uppercase tracking-wider text-slate-400 font-semibold block">Current Plan</span>
+                                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-3 py-1 rounded-full text-xs font-bold uppercase">
+                                    ${user.tier} Tier
+                                </span>
+                            </div>
+                            ${user.tier === 'free' ? `
+                                <a href="/contact" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25">
+                                    Upgrade Plan
+                                </a>
+                            ` : ''}
+                        </div>
+                    </div>
+
+                    <!-- Usage Pool Progress Box -->
+                    <div class="bg-[#131d31] border border-slate-800 p-6 rounded-2xl shadow-xl mb-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm font-semibold text-slate-300">Pooled Monthly Transactions</span>
+                            <span class="text-sm font-bold text-indigo-400">${user.webhook_count} / ${maxLimit.toLocaleString()} used</span>
+                        </div>
+                        <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden">
+                            <div class="bg-indigo-500 h-2.5 rounded-full" style="width: ${usagePercent}%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Add Monitor Form -->
+                    <div class="bg-[#131d31] border border-slate-800 p-6 rounded-2xl shadow-xl mb-6">
+                        <h3 class="text-lg font-bold mb-3 text-indigo-400">+ Create New Client Monitor</h3>
+                        <form action="/monitors" method="POST" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <input 
+                                type="text" 
+                                name="name" 
+                                required 
+                                placeholder="Client / Workflow Name (e.g. Acme Lead Bot)" 
+                                class="bg-[#0E1626] border border-slate-800 focus:border-indigo-500 px-4 py-2.5 rounded-lg text-slate-100 outline-none text-sm md:col-span-2"
+                            />
+                            <button 
+                                type="submit" 
+                                class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2.5 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/25 text-sm"
+                            >
+                                Generate Webhook
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Monitors List -->
+                    <div class="bg-[#131d31] border border-slate-800 p-6 rounded-2xl shadow-xl">
+                        <h3 class="text-lg font-bold mb-4 text-white">Your Active Client Monitors (${monitors.length})</h3>
+                        ${monitors.length === 0 ? `
+                            <p class="text-slate-400 text-sm">No monitors created yet. Add your first client workflow above!</p>
+                        ` : `
+                            <div class="space-y-3">
+                                ${monitors.map(m => `
+                                    <div class="bg-[#0E1626] border border-slate-800 p-4 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+                                        <div>
+                                            <div class="font-bold text-white text-sm mb-1">${m.name}</div>
+                                            <div class="text-xs font-mono text-indigo-400 bg-[#131d31] px-3 py-1.5 rounded border border-slate-800 select-all">
+                                                ${BASE_URL}/webhook/${m.webhook_secret}
+                                            </div>
+                                        </div>
+                                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-2.5 py-1 rounded-full font-semibold">
+                                            Active
+                                        </span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `}
+                    </div>
+                </main>
+
+                <div class="py-2"></div>
             </body>
             </html>
         `);
 
     } catch (err) {
-        console.error('Token verification error:', err);
-        res.status(500).send('Internal server error during authentication.');
+        console.error('Dashboard error:', err);
+        res.status(500).send('Error loading dashboard.');
+    }
+});
+
+// 11. Create New Monitor Route
+app.post('/monitors', async (req, res) => {
+    const cookies = parseCookies(req);
+    const sessionToken = cookies.sentnl_session;
+
+    if (!sessionToken) {
+        return res.redirect('/login');
+    }
+
+    const { name } = req.body;
+
+    try {
+        const sessionResult = await pool.query(
+            'SELECT user_id FROM sessions WHERE session_token = $1 AND expires_at > NOW()',
+            [sessionToken]
+        );
+
+        if (sessionResult.rows.length === 0) {
+            return res.redirect('/login');
+        }
+
+        const userId = sessionResult.rows[0].user_id;
+        const secret = crypto.randomBytes(16).toString('hex');
+
+        await pool.query(
+            'INSERT INTO monitors (user_id, name, webhook_secret, rule_type, target_field) VALUES ($1, $2, $3, $4, $5)',
+            [userId, name, secret, 'no_apologies', 'output']
+        );
+
+        res.redirect('/dashboard');
+    } catch (err) {
+        console.error('Create monitor error:', err);
+        res.status(500).send('Error creating monitor.');
     }
 });
 
