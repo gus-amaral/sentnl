@@ -117,7 +117,7 @@ app.get('/how-it-works', (req, res) => {
                 </p>
 
                 <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">The 3-Step Setup Process</h3>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs mb-2">
                     <div class="bg-[#0e1626] p-4 rounded-xl border border-slate-800">
                         <strong class="text-indigo-400 block mb-1 font-semibold text-sm">1. Get Your Endpoint</strong>
                         Enter your work email on the home page to instantly generate your unique secure webhook URL.
