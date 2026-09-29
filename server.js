@@ -1,5 +1,7 @@
 const express = require('express');
 const { Pool } = require('pg');
+const crypto = require('crypto');
+
 require('dotenv').config();
 
 const app = express();
@@ -29,7 +31,7 @@ const renderHeader = () => `
             <a href="/privacy-terms" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
-        <div style="width: 140px;"><!-- spacer to balance layout --></div>
+        <a href="/login" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Sign In</a>
     </header>
 `;
 
@@ -525,6 +527,176 @@ app.post('/webhook/:secret', async (req, res) => {
     } catch (err) {
         console.error('Webhook processing error:', err);
         return res.status(500).json({ error: 'Internal server error processing webhook.' });
+    }
+});
+
+const crypto = require('crypto');
+
+// ... (keep all your existing routes and header component) ...
+
+// 7. Login Page
+app.get('/login', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Sign In - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+            ${renderHeader()}
+
+            <div class="max-w-md w-full mx-auto text-center bg-[#0E1626] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
+                <h1 class="text-3xl font-extrabold mb-2">Sign In to Sentnl</h1>
+                <p class="text-slate-400 text-sm mb-6">
+                    Enter your work email and we'll send you a secure magic sign-in link. No password required.
+                </p>
+
+                <form action="/login" method="POST" class="flex flex-col gap-3">
+                    <input 
+                        type="email" 
+                        name="email" 
+                        required 
+                        placeholder="Enter your work email..." 
+                        class="bg-[#131d31] border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 px-4 py-3 rounded-lg text-slate-100 outline-none text-sm"
+                    />
+                    <button 
+                        type="submit" 
+                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/25 text-sm"
+                    >
+                        Send Magic Sign-In Link
+                    </button>
+                </form>
+                <div class="mt-6">
+                    <a href="/" class="text-slate-400 hover:text-slate-200 text-xs">&larr; Back to Home</a>
+                </div>
+            </div>
+
+            <div class="py-2"></div>
+        </body>
+        </html>
+    `);
+});
+
+// 8. Handle Magic Link Request
+app.post('/login', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const userResult = await pool.query('SELECT id, email FROM users WHERE email = $1', [email]);
+        
+        // Even if user doesn't exist, show a success message to prevent email enumeration attacks
+        if (userResult.rows.length > 0) {
+            const user = userResult.rows[0];
+            const token = crypto.randomBytes(32).toString('hex');
+            const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+
+            await pool.query(
+                'INSERT INTO magic_tokens (user_id, token, expires_at) VALUES ($1, $2, $3)',
+                [user.id, token, expiresAt]
+            );
+
+            const loginUrl = `http://localhost:3000/auth/verify?token=${token}`;
+
+            await resend.emails.send({
+                from: 'Sentnl Alerts <alerts@sentnl.tech>',
+                to: email,
+                subject: 'Your Sentnl Sign-In Link',
+                html: `
+                    <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px;">
+                        <h2 style="color: #818cf8; margin-top: 0;">Sign In to Sentnl 🔑</h2>
+                        <p>Click the secure button below to log into your Sentnl account. This link expires in 15 minutes.</p>
+                        
+                        <a href="${loginUrl}" style="display: inline-block; background: #4f46e5; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold; margin: 16px 0;">
+                            Sign In Now
+                        </a>
+                    </div>
+                `
+            });
+        }
+
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <script src="https://cdn.tailwindcss.com"></script>
+            </head>
+            <body class="bg-[#0E1626] text-slate-100 flex flex-col justify-between h-screen m-0 overflow-hidden">
+                ${renderHeader()}
+
+                <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
+                    <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">✉️</div>
+                    <h2 class="text-2xl font-bold mb-2">Check Your Inbox</h2>
+                    <p class="text-slate-400 text-sm mb-6">If an account exists for <strong>${email}</strong>, we've sent a secure magic sign-in link.</p>
+                    <a href="/login" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Sign In</a>
+                </div>
+
+                <div class="py-2"></div>
+            </body>
+            </html>
+        `);
+    } catch (err) {
+        console.error('Login request error:', err);
+        res.status(500).send('Error generating login link.');
+    }
+});
+
+// 9. Verify Magic Token & Login
+app.get('/auth/verify', async (req, res) => {
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).send('Missing login token.');
+    }
+
+    try {
+        const tokenResult = await pool.query(
+            'SELECT * FROM magic_tokens WHERE token = $1 AND used = FALSE AND expires_at > NOW()',
+            [token]
+        );
+
+        if (tokenResult.rows.length === 0) {
+            return res.status(400).send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head><script src="https://cdn.tailwindcss.com"></script></head>
+                <body class="bg-[#0E1626] text-slate-100 flex items-center justify-center h-screen m-0">
+                    <div class="text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl max-w-md">
+                        <h2 class="text-xl font-bold text-red-400 mb-2">Link Expired or Invalid</h2>
+                        <p class="text-slate-400 text-sm mb-4">This magic link has already been used or has expired (15-minute limit).</p>
+                        <a href="/login" class="text-indigo-400 hover:underline text-sm font-medium">Request a new link</a>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
+        const magicToken = tokenResult.rows[0];
+
+        // Mark token as used so it can't be replayed
+        await pool.query('UPDATE magic_tokens SET used = TRUE WHERE id = $1', [magicToken.id]);
+
+        // For now, let's redirect them to a placeholder dashboard route or drop a success message 
+        // while we build out the full multi-monitor dashboard UI next!
+        res.send(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head><script src="https://cdn.tailwindcss.com"></script></head>
+            <body class="bg-[#0E1626] text-slate-100 flex items-center justify-center h-screen m-0">
+                <div class="text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl max-w-md">
+                    <h2 class="text-2xl font-bold text-emerald-400 mb-2">Successfully Logged In! 🎉</h2>
+                    <p class="text-slate-400 text-sm mb-4">You are authenticated. Next, we will render your multi-client dashboard here.</p>
+                </div>
+            </body>
+            </html>
+        `);
+
+    } catch (err) {
+        console.error('Token verification error:', err);
+        res.status(500).send('Internal server error during authentication.');
     }
 });
 
