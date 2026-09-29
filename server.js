@@ -52,7 +52,7 @@ app.get('/', (req, res) => {
             gtag('config', 'G-5HQ8Q06EF6');
             </script>
         </head>
-        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
+        <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
             ${renderHeader()}
 
             <!-- Hero Content -->
