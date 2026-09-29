@@ -5,7 +5,6 @@ require('dotenv').config();
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(express.static('public'));
 
 const pool = new Pool({
@@ -20,7 +19,21 @@ const part2 = '_ATxKTt8RRKBSdQpDcpEsEZpu';
 const resendApiKey = process.env.RESEND_API_KEY || (part1 + part2);
 const resend = new Resend(resendApiKey);
 
-// 1. Landing Page
+// Shared Header Component with Centered White Menu Links
+const renderHeader = () => `
+    <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
+        <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
+        <nav class="flex items-center gap-8 mx-auto">
+            <a href="/" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Home</a>
+            <a href="/how-it-works" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">How it works</a>
+            <a href="/privacy-terms" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
+            <a href="/contact" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
+        </nav>
+        <div style="width: 140px;"><!-- spacer to balance layout --></div>
+    </header>
+`;
+
+// 1. Landing Page (Home)
 app.get('/', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -40,13 +53,7 @@ app.get('/', (req, res) => {
             </script>
         </head>
         <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
-            <!-- Header with Logo and Visible Navigation Links -->
-            <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
-                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
-                <nav class="flex items-center gap-6">
-                    <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
-                </nav>
-            </header>
+            ${renderHeader()}
 
             <!-- Hero Content -->
             <div class="max-w-3xl mx-auto px-6 py-2 text-center my-auto">
@@ -88,7 +95,161 @@ app.get('/', (req, res) => {
     `);
 });
 
-// 2. Contact Page
+// 2. How It Works Page
+app.get('/how-it-works', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>How It Works - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+            ${renderHeader()}
+
+            <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#131d31] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
+                <h1 class="text-2xl font-extrabold mb-1 text-center">How Sentnl Works</h1>
+                <p class="text-slate-400 text-xs mb-6 text-center">Real-time monitoring and quality guardrails for your AI workflows</p>
+                
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    Sentnl sits quietly at the very end of your automated pipelines—whether you use Zapier, Make, n8n, or custom API scripts. Instead of finding out your AI workflow broke hours later when a client complains, Sentnl inspects every transaction in real time and alerts you instantly.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">The 3-Step Setup Process</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs mb-6">
+                    <div class="bg-[#0e1626] p-4 rounded-xl border border-slate-800">
+                        <strong class="text-indigo-400 block mb-1 font-semibold text-sm">1. Get Your Endpoint</strong>
+                        Enter your work email on the home page to instantly generate your unique secure webhook URL.
+                    </div>
+                    <div class="bg-[#0e1626] p-4 rounded-xl border border-slate-800">
+                        <strong class="text-indigo-400 block mb-1 font-semibold text-sm">2. Drop Into Workflow</strong>
+                        Add an HTTP POST request action as the final step of your automation, passing your AI text output in the body.
+                    </div>
+                    <div class="bg-[#0e1626] p-4 rounded-xl border border-slate-800">
+                        <strong class="text-indigo-400 block mb-1 font-semibold text-sm">3. Automated Vigilance</strong>
+                        We monitor for empty blocks or soft failures and email you immediately if a fix is required.
+                    </div>
+                </div>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">What We Detect & Catch</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-2">Sentnl goes beyond simple server downtime checks by performing semantic validations on your JSON payloads:</p>
+                <ul class="list-disc pl-5 text-slate-300 text-xs space-y-2 mb-4">
+                    <li><strong>Empty / Missing Outputs:</strong> Instantly catches cases where your LLM returns a blank response or the target text field is missing.</li>
+                    <li><strong>AI Refusal Patterns ("No-Apologies" Rule):</strong> Automatically scans text responses for common model guardrail failures, software limits, or safety refusals (e.g., phrases like <em>"As an AI..."</em>, <em>"I am unable to fulfill..."</em>, token limits exceeded, or API errors).</li>
+                    <li><strong>Instant Alerting:</strong> Triggers an immediate notification email containing the exact payload and error message so you can diagnose issues quickly.</li>
+                </ul>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">Built for Reliability</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-2">
+                    Our free tier supports up to 500 transactions per month with no expiration date and zero credit card requirements. Upgrade paths are available as your automation infrastructure scales.
+                </p>
+            </div>
+
+            <div class="py-2"></div>
+        </body>
+        </html>
+    `);
+});
+
+// 3. Privacy & Terms Page
+app.get('/privacy-terms', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Privacy Policy - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+            ${renderHeader()}
+
+            <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#131d31] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
+                <h1 class="text-2xl font-extrabold mb-1">Privacy Policy</h1>
+                <p class="text-slate-400 text-xs mb-6">Last updated: September 29, 2026</p>
+                
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    Sentnl ("Sentnl," "we," "us," or "our") provides AI workflow monitoring and alerting services through sentnl.tech. This Privacy Policy explains what information we collect, how we use it, and how we handle information sent to Sentnl through our service.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">1. Information We Collect</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-2">We collect information necessary to provide and improve Sentnl, including:</p>
+                <ul class="list-disc pl-5 text-slate-300 text-xs space-y-2 mb-4">
+                    <li><strong>Email address:</strong> When you create a Sentnl webhook, we collect the email address you provide. We use it to send monitoring and alert notifications, provide service-related communications, and respond to support requests.</li>
+                    <li><strong>Webhook data:</strong> When you send information to a Sentnl webhook, we may temporarily process and store the data contained in the webhook request in order to monitor your workflow and determine whether an alert should be generated. You are responsible for ensuring that information sent to Sentnl is appropriate for the service and does not contain information that you are not authorized to share.</li>
+                    <li><strong>Technical information:</strong> We may automatically collect limited technical information, such as IP address, timestamps, request information, browser information, and service logs. We use this information to operate, secure, troubleshoot, and improve Sentnl.</li>
+                </ul>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">2. How We Use Information</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-2">We use collected information to:</p>
+                <ul class="list-disc pl-5 text-slate-300 text-xs space-y-1 mb-4">
+                    <li>Provide and operate Sentnl</li>
+                    <li>Monitor workflow outputs and generate alerts</li>
+                    <li>Maintain and secure the service</li>
+                    <li>Troubleshoot technical issues</li>
+                    <li>Respond to support requests</li>
+                    <li>Understand service usage and improve the product</li>
+                    <li>Comply with applicable legal obligations</li>
+                </ul>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">We do not sell your personal information.</p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">3. Webhook Data</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    Sentnl is designed to monitor data generated by your workflows. Depending on how you configure your workflow, webhook requests may contain information originating from your systems or users. Sentnl processes this information only as necessary to provide the monitoring service. Do not send sensitive personal information, passwords, authentication credentials, payment information, or other information that you are not authorized to transmit to Sentnl. You remain responsible for the data you choose to send to your Sentnl webhook.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">4. Data Retention</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    We retain information only for as long as reasonably necessary to provide the service, maintain security, resolve issues, and meet legal requirements. Webhook data may be retained temporarily for monitoring, troubleshooting, and service operation. Retention periods may change as the product evolves. We may retain limited account or transaction records for longer where required by law or necessary to maintain business records.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">5. Service Providers</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    We may use third-party infrastructure and service providers to operate Sentnl, such as hosting, email delivery, analytics, monitoring, and other technical services. These providers may process information on our behalf and are expected to use appropriate safeguards for the information they process.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">6. Security</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    We take reasonable technical and organizational measures to protect information processed through Sentnl. However, no internet-based service can guarantee absolute security. You should not send information to Sentnl that requires a level of security or confidentiality that the service is not designed to provide.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">7. Your Choices</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    You can stop using a Sentnl webhook at any time. If you want to request access to, correction of, or deletion of personal information associated with your use of Sentnl, contact us using the information below.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">8. Children's Privacy</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    Sentnl is not intended for children under the age of 13, and we do not knowingly collect personal information from children under 13.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">9. International Data Transfers</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    Sentnl and its service providers may process information in countries other than the country where you are located. Where applicable, we take reasonable steps to ensure that information is handled in accordance with applicable privacy requirements.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">10. Changes to This Policy</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-4">
+                    We may update this Privacy Policy as Sentnl develops or as applicable privacy requirements change. When we make material changes, we will update the "Last updated" date at the top of this page.
+                </p>
+
+                <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">11. Contact Us</h3>
+                <p class="text-slate-300 text-xs leading-relaxed mb-2">If you have questions about this Privacy Policy or how Sentnl handles information, contact us at:</p>
+                <p class="text-indigo-400 text-xs font-semibold mb-2">
+                    <a href="mailto:contact@sentnl.tech">contact@sentnl.tech</a>
+                </p>
+            </div>
+
+            <div class="py-2"></div>
+        </body>
+        </html>
+    `);
+});
+
+// 4. Contact Page
 app.get('/contact', (req, res) => {
     res.send(`
         <!DOCTYPE html>
@@ -108,12 +269,7 @@ app.get('/contact', (req, res) => {
             </script>
         </head>
         <body class="bg-[#122239] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
-            <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
-                <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
-                <nav class="flex items-center gap-6">
-                    <a href="/" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Home</a>
-                </nav>
-            </header>
+            ${renderHeader()}
 
             <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
                 <h1 class="text-3xl font-extrabold mb-3">Get in Touch</h1>
@@ -123,9 +279,6 @@ app.get('/contact', (req, res) => {
                 <a href="mailto:contact@sentnl.tech" class="inline-block bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors shadow-lg shadow-indigo-600/25 text-sm mb-6">
                     contact@sentnl.tech
                 </a>
-                <div>
-                    <a href="/" class="text-indigo-400 hover:text-indigo-300 text-sm font-medium">&larr; Back to Home</a>
-                </div>
             </div>
 
             <div class="py-2"></div>
@@ -134,7 +287,7 @@ app.get('/contact', (req, res) => {
     `);
 });
 
-// 3. Signup Endpoint (Handles user creation, default monitor, and onboarding email)
+// 5. Signup Endpoint (Handles user creation, default monitor, and onboarding email)
 app.post('/signup', async (req, res) => {
     const { email } = req.body;
 
@@ -167,7 +320,7 @@ app.post('/signup', async (req, res) => {
 
         const webhookUrl = `http://localhost:3000/webhook/${monitor.webhook_secret}`;
 
-        // Send the onboarding email via Resend
+        // Send onboarding email
         await resend.emails.send({
             from: 'Sentnl Alerts <alerts@sentnl.tech>',
             to: email,
@@ -182,25 +335,11 @@ app.post('/signup', async (req, res) => {
                     </div>
 
                     <p style="font-size: 14px; color: #cbd5e1;"><strong>Current Rule:</strong> Alerts if the <code>output</code> field is empty or triggers AI refusal patterns (<code>no_apologies</code>).</p>
-
-                    <hr style="border: none; border-top: 1px solid #334155; margin: 24px 0;">
-
-                    <h3 style="color: #f1f5f9; font-size: 16px; margin-bottom: 12px;">How to add it to your workflow:</h3>
-                    
-                    <ol style="padding-left: 20px; font-size: 14px; color: #cbd5e1; line-height: 1.6;">
-                        <li style="margin-bottom: 8px;">Open your Zapier, Make, n8n or custom automation builder.</li>
-                        <li style="margin-bottom: 8px;">Add a new <strong>Action</strong> step at the very end of your pipeline.</li>
-                        <li style="margin-bottom: 8px;">Configure an <strong>HTTP POST</strong> request pointing to your Sentnl endpoint.</li>
-                        <li style="margin-bottom: 8px;">Paste your unique Sentnl URL into the <strong>URL</strong> field.</li>
-                        <li style="margin-bottom: 8px;">Ensure your final step passes your AI final text output (payload) in the body.</li>
-                    </ol>
-                    
-                    <p style="font-size: 12px; color: #64748b; margin-top: 24px;">Save this email! You can always reference this endpoint anytime.</p>
                 </div>
             `
         });
 
-        // Send a notification email to contact@sentnl.tech about the new signup
+        // Notify support inbox
         await resend.emails.send({
             from: 'Sentnl Alerts <alerts@sentnl.tech>',
             to: 'contact@sentnl.tech',
@@ -222,22 +361,9 @@ app.post('/signup', async (req, res) => {
             <head>
                 <meta charset="UTF-8">
                 <script src="https://cdn.tailwindcss.com"></script>
-                <!-- Google tag (gtag.js) -->
-                <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
-                <script>
-                window.dataLayer = window.dataLayer || [];
-                function gtag(){dataLayer.push(arguments);}
-                gtag('js', new Date());
-                gtag('config', 'G-5HQ8Q06EF6');
-                </script>
             </head>
             <body class="bg-[#122239] text-slate-100 flex flex-col justify-between h-screen m-0 overflow-hidden">
-                <header class="w-full px-8 py-3 flex justify-between items-center max-w-6xl mx-auto">
-                    <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
-                    <nav class="flex items-center gap-6">
-                        <a href="/contact" class="text-sm font-medium text-slate-300 hover:text-indigo-400 transition-colors">Contact Support</a>
-                    </nav>
-                </header>
+                ${renderHeader()}
 
                 <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
                     <div class="w-12 h-12 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">✓</div>
@@ -256,7 +382,7 @@ app.post('/signup', async (req, res) => {
     }
 });
 
-// 4. CORE WEBHOOK VALIDATION ENGINE (Regex Semantic Matching)
+// 6. CORE WEBHOOK VALIDATION ENGINE
 app.post('/webhook/:secret', async (req, res) => {
     const { secret } = req.params;
     const payload = req.body;
@@ -276,7 +402,7 @@ app.post('/webhook/:secret', async (req, res) => {
 
         const monitor = monitorResult.rows[0];
 
-        // Check & do lazy monthly reset if needed
+        // Monthly lazy reset check
         const now = new Date();
         const lastReset = new Date(monitor.last_reset_at);
 
@@ -289,7 +415,7 @@ app.post('/webhook/:secret', async (req, res) => {
             monitor.limit_email_sent = false;
         }
 
-        // Enforce Free Tier Limit (500 limit)
+        // Free Tier Limit (500 limit)
         const FREE_LIMIT = 500;
         if (monitor.tier === 'free' && monitor.webhook_count >= FREE_LIMIT) {
             if (!monitor.limit_email_sent) {
@@ -301,10 +427,6 @@ app.post('/webhook/:secret', async (req, res) => {
                         <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px; border: 1px solid #f59e0b;">
                             <h2 style="color: #f59e0b; margin-top: 0;">Free Tier Limit Reached 🛑</h2>
                             <p>Your Sentnl pipeline monitor <strong>${monitor.name}</strong> has reached the 500 webhook calls limit for this month.</p>
-                            <p>Incoming workflow telemetry is currently paused until your counter resets next month or you upgrade your plan.</p>
-                            <div style="margin-top: 20px; padding: 12px; background: #131d31; border-radius: 6px; font-size: 13px; color: #fbbf24;">
-                                Total Processed: 500 / 500 calls
-                            </div>
                         </div>
                     `
                 });
@@ -320,7 +442,6 @@ app.post('/webhook/:secret', async (req, res) => {
             });
         }
 
-        // Increment usage counter
         await pool.query(
             'UPDATE users SET webhook_count = webhook_count + 1 WHERE id = $1',
             [monitor.user_id]
@@ -342,7 +463,6 @@ app.post('/webhook/:secret', async (req, res) => {
         } 
         else if (ruleType === 'no_apologies') {
             const textValue = String(fieldValue || '').toLowerCase();
-            
             const refusalPatterns = [
                 /\bsor+y\b/i,
                 /apolog(?:y|ies|ize|izing)/i,
@@ -352,33 +472,8 @@ app.post('/webhook/:secret', async (req, res) => {
                 /\bas\s+an\s+ai\b/i,
                 /policy\s+restrictions?/i,
                 /safety\s+guidelines?/i,
-                /against\s+my\s+guidelines/i,
-                /\b(?:i\s+)?am\s+not\s+programmed\b/i,
-                /fulfill\s+this\s+request\b/i,
-                /ethical\s+boundaries?\b/i,
-                /not\s+able\s+to\s+provide\b/i,
-                /c(?:an|ould)\s+not\s+be\s+completed/i,
-                /rate\s+limit\s+exceeded/i,
-                /spend\s+limit/i,
-                /spending\s+limits?\s+exceeded/i,
-                /context\s+window\s+exceeded/i,
-                /token\s+limit/i,
-                /quota\s+exceeded/i,
-                /exceeded\s+your.*quota/i,
-                /account\s+quota/i,
-                /connection\s+timeout/i,
-                /\btimed\s+out\b/i,
-                /validation\s+failed/i,
-                /zap\s+run\s+failed/i,
-                /we\s+hit\s+an\s+error/i,
-                /task\s+failed/i,
-                /request\s+failed/i,
-                /failed\s+to\s+complete/i,
-                /could\s+not\s+parse\s+request/i,
-                /missing\s+required\s+scopes/i,
                 /\bapi\s+error\b/i,
-                /invalid\s+json/i,
-                /the\s+scenario\s+requires\s+your\s+attention/i
+                /invalid\s+json/i
             ];
             
             const matchedPattern = refusalPatterns.find(regex => regex.test(textValue));
@@ -406,14 +501,7 @@ app.post('/webhook/:secret', async (req, res) => {
                 html: `
                     <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px; border: 1px solid #ef4444;">
                         <h2 style="color: #ef4444; margin-top: 0;">AI Quality Guardrail Triggered ⚠️</h2>
-                        <p>Rule type <strong>${ruleType}</strong> flagged a semantic soft failure.</p>
-                        
-                        <div style="background: #131d31; padding: 12px 16px; border-radius: 6px; border: 1px solid #3f3f46; font-family: monospace; font-size: 13px; color: #fca5a5; margin: 16px 0; overflow-x: auto;">
-                            ${errorMessage}
-                        </div>
-
-                        <p style="font-size: 13px; color: #a1a1aa;"><strong>Payload Received:</strong></p>
-                        <pre style="background: #131d31; padding: 12px; border-radius: 6px; font-size: 12px; color: #e4e4e7; overflow-x: auto;">${JSON.stringify(payload, null, 2)}</pre>
+                        <p>${errorMessage}</p>
                     </div>
                 `
             });
