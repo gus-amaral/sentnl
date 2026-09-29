@@ -111,10 +111,9 @@ app.get('/how-it-works', (req, res) => {
 
             <div class="max-w-3xl mx-auto px-6 py-6 text-left my-auto bg-[#0E1626] border border-slate-800 rounded-2xl shadow-xl overflow-y-auto max-h-[78vh]">
                 <h1 class="text-2xl font-extrabold mb-1 text-center">How Sentnl Works</h1>
-                <p class="text-slate-400 text-xs mb-6 text-center">Real-time monitoring and quality guardrails for your AI workflows</p>
                 
                 <p class="text-slate-300 text-xs leading-relaxed mb-4">
-                    Sentnl sits quietly at the very end of your automated pipelines—whether you use Zapier, Make, n8n, or custom API scripts. Instead of finding out your AI workflow broke hours later when a client complains, Sentnl inspects every transaction in real time and alerts you instantly.
+                    Sentnl sits quietly at the very end of your automated pipelines—whether you use Zapier, Make, n8n, or custom API scripts. Sentnl inspects every transaction in real time and alerts you instantly.
                 </p>
 
                 <h3 class="text-indigo-400 font-semibold text-sm mt-4 mb-2">The 3-Step Setup Process</h3>
