@@ -958,15 +958,13 @@ app.get('/dashboard', async (req, res) => {
                                     ${user.tier} Tier
                                 </span>
                             </div>
-                            ${user.tier === 'free' ? `
-                                <form action="/create-checkout-session" method="POST">
-                                    <button 
-                                        type="submit" 
-                                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25 cursor-pointer"
-                                    >
-                                        Upgrade Plan
-                                    </button>
-                                </form>
+                           ${user.tier === 'free' ? `
+                                <a 
+                                    href="/pricing" 
+                                    class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25 cursor-pointer inline-block"
+                                >
+                                    Upgrade Plan
+                                </a>
                             ` : ''}
                         </div>
                     </div>
@@ -1083,8 +1081,7 @@ app.post('/create-checkout-session', async (req, res) => {
     const plan = req.body.plan || 'agency';
 
     if (!sessionToken) {
-        // Send them to register and remember what plan they wanted!
-        return res.redirect(`/register?plan=${plan}`);
+        return res.redirect(`/pricing/auth?plan=${plan}`);
     }
 
     try {
@@ -1157,6 +1154,106 @@ app.post('/webhook/stripe', express.json(), async (req, res) => {
     }
 
     res.json({ received: true });
+});
+
+// 15. Pricing Auth Bridge (Handles logged-out users wanting to buy a paid plan)
+app.get('/pricing/auth', (req, res) => {
+    const plan = req.query.plan || 'agency';
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Continue to Checkout - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
+            ${renderHeader()}
+
+            <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
+                <span class="inline-block bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full mb-3 font-semibold uppercase">
+                    ${plan} Tier Selected
+                </span>
+                <h1 class="text-2xl font-extrabold mb-2">Enter your work email to continue</h1>
+                <p class="text-slate-400 text-sm mb-6">
+                    We'll quickly set up your account or sign you in, then take you straight to secure checkout.
+                </p>
+
+                <form action="/pricing/auth" method="POST" class="flex flex-col gap-3">
+                    <input type="hidden" name="plan" value="${plan}" />
+                    <input 
+                        type="email" 
+                        name="email" 
+                        required 
+                        placeholder="Enter your work email..." 
+                        class="bg-[#0E1626] border border-slate-800 focus:border-indigo-500 px-4 py-3 rounded-lg text-slate-100 outline-none text-sm"
+                    />
+                    <button 
+                        type="submit" 
+                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/25 text-sm"
+                    >
+                        Continue to Checkout &rarr;
+                    </button>
+                </form>                
+            </div>
+
+            <div class="py-2"></div>
+        </body>
+        </html>
+    `);
+});
+
+app.post('/pricing/auth', async (req, res) => {
+    const { email, plan } = req.body;
+
+    try {
+        // Check if user already exists
+        let userResult = await pool.query('SELECT id, email FROM users WHERE email = $1', [email]);
+        let user;
+
+        if (userResult.rows.length > 0) {
+            user = userResult.rows[0];
+        } else {
+            // New user: auto-create account and default monitor (Scenarios #3)
+            const userQuery = `
+                INSERT INTO users (email, tier) 
+                VALUES ($1, 'free') 
+                RETURNING id, email;
+            `;
+            const newUserRes = await pool.query(userQuery, [email]);
+            user = newUserRes.rows[0];
+
+            const createMonitorQuery = `
+                INSERT INTO monitors (user_id, name, rule_type, target_field) 
+                VALUES ($1, 'Default Pipeline Monitor', 'no_apologies', 'output')
+                RETURNING *;
+            `;
+            await pool.query(createMonitorQuery, [user.id]);
+        }
+
+        // Generate a magic session token right away so they bypass typing a password or checking email links for immediate checkout flow
+        const sessionToken = crypto.randomBytes(32).toString('hex');
+        const sessionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+
+        await pool.query(
+            'INSERT INTO sessions (user_id, session_token, expires_at) VALUES ($1, $2, $3)',
+            [user.id, sessionToken, sessionExpires]
+        );
+
+        res.cookie('sentnl_session', sessionToken, {
+            httpOnly: true,
+            secure: false,
+            maxAge: 30 * 24 * 60 * 60 * 1000
+        });
+
+        // Instantly route them into the checkout session for the plan they chose!
+        res.redirect(307, `/create-checkout-session?plan=${plan}`);
+
+    } catch (err) {
+        console.error('Pricing auth error:', err);
+        res.status(500).send('Error processing checkout authentication.');
+    }
 });
 
 const PORT = process.env.PORT || 3000;
