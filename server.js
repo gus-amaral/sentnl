@@ -1081,6 +1081,7 @@ app.post('/create-checkout-session', async (req, res) => {
     const plan = req.body.plan || 'agency';
 
     if (!sessionToken) {
+        // Send them to our pricing auth bridge to collect email & send magic link!
         return res.redirect(`/pricing/auth?plan=${plan}`);
     }
 
