@@ -34,9 +34,9 @@ const renderHeader = () => `
             <a href="/privacy-terms" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-sm font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
-        <!-- TEMPORARILY DISABLED SIGN IN:
+        
         <a href="/login" class="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Sign In</a>
-        -->
+        
     </header>
 `;
 
@@ -601,7 +601,7 @@ app.post('/login', async (req, res) => {
                 [user.id, token, expiresAt]
             );
 
-            const loginUrl = `${BASE_URL}/auth/verify?token=${token}`;
+            const loginUrl = `${BASE_URL}/auth/confirm?token=${token}`;
 
             await resend.emails.send({
                 from: 'Sentnl Alerts <alerts@sentnl.tech>',
@@ -659,9 +659,51 @@ function parseCookies(req) {
     return list;
 }
 
-// 9. Verify Magic Token & Login (Updated to establish session)
-app.get('/auth/verify', async (req, res) => {
+// 9a. Neutral Confirmation Page (Safe from email scanners)
+app.get('/auth/confirm', async (req, res) => {
     const { token } = req.query;
+
+    if (!token) {
+        return res.status(400).send('Missing login token.');
+    }
+
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Confirm Sign-In - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0">
+            ${renderHeader()}
+
+            <div class="max-w-md w-full mx-auto text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
+                <div class="w-12 h-12 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full flex items-center justify-center mx-auto mb-4 text-xl">🔐</div>
+                <h2 class="text-2xl font-bold mb-2">Almost Logged In</h2>
+                <p class="text-slate-400 text-sm mb-6">Click the button below to verify your session and open your agency dashboard.</p>
+                
+                <form action="/auth/verify" method="POST">
+                    <input type="hidden" name="token" value="${token}" />
+                    <button 
+                        type="submit" 
+                        class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/25 text-sm"
+                    >
+                        Complete Sign In &rarr;
+                    </button>
+                </form>
+            </div>
+
+            <div class="py-2"></div>
+        </body>
+        </html>
+    `);
+});
+
+// 9b. Verify Magic Token & Login
+app.post('/auth/verify', async (req, res) => {
+    const { token } = req.body;
 
     if (!token) {
         return res.status(400).send('Missing login token.');
@@ -669,7 +711,7 @@ app.get('/auth/verify', async (req, res) => {
 
     try {
         const tokenResult = await pool.query(
-            'SELECT * FROM magic_tokens WHERE token = $1 AND used = FALSE AND expires_at > NOW()',
+            'SELECT * FROM magic_tokens WHERE token = $1 AND used = FALSE',
             [token]
         );
 
@@ -691,10 +733,27 @@ app.get('/auth/verify', async (req, res) => {
 
         const magicToken = tokenResult.rows[0];
 
+        // Check expiration in JavaScript to bypass database timezone/offset discrepancies
+        if (new Date(magicToken.expires_at) < new Date()) {
+            return res.status(400).send(`
+                <!DOCTYPE html>
+                <html lang="en">
+                <head><script src="https://cdn.tailwindcss.com"></script></head>
+                <body class="bg-[#0E1626] text-slate-100 flex items-center justify-center h-screen m-0">
+                    <div class="text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl max-w-md">
+                        <h2 class="text-xl font-bold text-red-400 mb-2">Link Expired</h2>
+                        <p class="text-slate-400 text-sm mb-4">This magic link has expired (15-minute limit).</p>
+                        <a href="/login" class="text-indigo-400 hover:underline text-sm font-medium">Request a new link</a>
+                    </div>
+                </body>
+                </html>
+            `);
+        }
+
         // Mark token as used
         await pool.query('UPDATE magic_tokens SET used = TRUE WHERE id = $1', [magicToken.id]);
 
-        // Create a session token (valid for 30 days)
+        // Create session token (30 days)
         const sessionToken = crypto.randomBytes(32).toString('hex');
         const sessionExpires = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
 
@@ -703,10 +762,9 @@ app.get('/auth/verify', async (req, res) => {
             [magicToken.user_id, sessionToken, sessionExpires]
         );
 
-        // Set secure cookie and redirect to dashboard
         res.cookie('sentnl_session', sessionToken, {
             httpOnly: true,
-            secure: false, // set to true if using HTTPS in production
+            secure: false,
             maxAge: 30 * 24 * 60 * 60 * 1000
         });
 
@@ -741,6 +799,13 @@ app.get('/dashboard', async (req, res) => {
         }
 
         const user = sessionResult.rows[0];
+
+        // LOCAL TESTING FALLBACK: If redirected back with ?upgrade=success, upgrade instantly
+        if (req.query.upgrade === 'success' && user.tier !== 'agency') {
+            await pool.query("UPDATE users SET tier = 'agency' WHERE id = $1", [user.id]);
+            user.tier = 'agency'; // update local object for immediate render
+            console.log(`Local fallback: Upgraded user ${user.id} to agency tier!`);
+        }
 
         // Fetch all monitors for this user
         const monitorsResult = await pool.query(
@@ -780,9 +845,14 @@ app.get('/dashboard', async (req, res) => {
                                 </span>
                             </div>
                             ${user.tier === 'free' ? `
-                                <a href="/contact" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25">
-                                    Upgrade Plan
-                                </a>
+                                <form action="/create-checkout-session" method="POST">
+                                    <button 
+                                        type="submit" 
+                                        class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25 cursor-pointer"
+                                    >
+                                        Upgrade Plan
+                                    </button>
+                                </form>
                             ` : ''}
                         </div>
                     </div>
@@ -888,6 +958,79 @@ app.post('/monitors', async (req, res) => {
         console.error('Create monitor error:', err);
         res.status(500).send('Error creating monitor.');
     }
+});
+
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+
+// 12. Create Stripe Checkout Session for Agency Tier Upgrade
+app.post('/create-checkout-session', async (req, res) => {
+    const cookies = parseCookies(req);
+    const sessionToken = cookies.sentnl_session;
+
+    if (!sessionToken) {
+        return res.redirect('/login');
+    }
+
+    try {
+        const sessionResult = await pool.query(
+            `SELECT users.* FROM sessions 
+             JOIN users ON sessions.user_id = users.id 
+             WHERE sessions.session_token = $1 AND sessions.expires_at > NOW()`,
+            [sessionToken]
+        );
+
+        if (sessionResult.rows.length === 0) {
+            return res.redirect('/login');
+        }
+
+        const user = sessionResult.rows[0];
+
+       const stripeSession = await stripe.checkout.sessions.create({
+            customer_email: user.email,
+            line_items: [
+                {
+                    price: 'price_1ULE4dAgLGQWFBWPdctCfkrM', // Your Stripe Price ID
+                    quantity: 1,
+                },
+            ],
+            mode: 'subscription',
+            success_url: `${BASE_URL}/dashboard?upgrade=success`,
+            cancel_url: `${BASE_URL}/dashboard?upgrade=canceled`,
+            metadata: {
+                user_id: user.id
+            }
+        });
+
+        res.redirect(303, stripeSession.url);
+
+    } catch (err) {
+        console.error('Stripe checkout error:', err);
+        res.status(500).send('Error initiating checkout session.');
+    }
+});
+
+// 13. Stripe Webhook to Automatically Upgrade User Tier
+app.post('/webhook/stripe', express.json(), async (req, res) => {
+    const event = req.body;
+
+    if (event.type === 'checkout.session.completed') {
+        const stripeSession = event.data.object;
+        const userId = stripeSession.metadata.user_id;
+
+        if (userId) {
+            try {
+                await pool.query(
+                    "UPDATE users SET tier = 'agency' WHERE id = $1",
+                    [userId]
+                );
+                console.log(`Successfully upgraded user ${userId} to agency tier via Stripe!`);
+            } catch (dbErr) {
+                console.error('Database update error during Stripe webhook:', dbErr);
+            }
+        }
+    }
+
+    res.json({ received: true });
 });
 
 const PORT = process.env.PORT || 10000;
