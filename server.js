@@ -61,7 +61,7 @@ async function checkAuth(req) {
 }
 
 // 1. Landing Page (Home - Repositioned for Agencies & Client-Facing Builders)
-app.get('/', (req, res) => {
+app.get('/', async (req, res) => {
     const isLoggedIn = await checkAuth(req);
 
     res.send(`
@@ -141,7 +141,7 @@ app.get('/', (req, res) => {
 });
 
 // 2. How It Works Page
-app.get('/how-it-works', (req, res) => {
+app.get('/how-it-works', async (req, res) => {
     const isLoggedIn = await checkAuth(req);
 
     res.send(`
@@ -201,7 +201,7 @@ app.get('/how-it-works', (req, res) => {
 });
 
 // 3. Pricing Page
-app.get('/pricing', (req, res) => {
+app.get('/pricing', async (req, res) => {
     const isLoggedIn = await checkAuth(req);
 
     res.send(`
@@ -296,7 +296,7 @@ app.get('/pricing', (req, res) => {
 });
 
 // 4. Privacy & Terms Page
-app.get('/privacy-terms', (req, res) => {
+app.get('/privacy-terms', async (req, res) => {
     const isLoggedIn = await checkAuth(req);
 
     res.send(`
@@ -419,9 +419,9 @@ app.get('/privacy-terms', (req, res) => {
 });
 
 // 5. Contact Page
-app.get('/contact', (req, res) => {
+app.get('/contact', async (req, res) => {
     const isLoggedIn = await checkAuth(req);
-    
+
     res.send(`
         <!DOCTYPE html>
         <html lang="en">
