@@ -25,7 +25,7 @@ const resend = new Resend(resendApiKey);
 const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Shared Header Component with Centered White Menu Links
-const renderHeader = () => `
+const renderHeader = (isLoggedIn = false) => `
     <header class="w-full px-6 md:px-12 py-2 flex justify-between items-center">
         <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
         <nav class="flex items-center gap-8 mx-auto">
@@ -34,7 +34,10 @@ const renderHeader = () => `
             <a href="/privacy-terms" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
-        <a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>
+        ${isLoggedIn 
+            ? `<form action="/logout" method="POST" class="m-0"><button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer border border-slate-700">Sign Out</button></form>`
+            : `<a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>`
+        }
     </header>
 `;
 
@@ -868,8 +871,9 @@ app.get('/dashboard', async (req, res) => {
                 <script src="https://cdn.tailwindcss.com"></script>
             </head>
             <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
-                ${renderHeader()}
-
+                
+                ${renderHeader(true)} <!-- Pass true here so it displays "Sign Out" -->
+                
                 <main class="max-w-4xl w-full mx-auto px-6 py-8 my-auto">
                     <!-- Top Bar: Account & Tier -->
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center bg-[#131d31] border border-slate-800 p-6 rounded-2xl shadow-xl mb-6 gap-4">
@@ -1355,6 +1359,27 @@ app.all('/auth/verify', async (req, res) => {
         console.error('Token verification error:', err);
         return res.status(500).send('Internal server error during authentication.');
     }
+});
+
+// 16. Logout Route (Deletes session from DB and clears cookie)
+app.post('/logout', async (req, res) => {
+    const cookies = parseCookies(req);
+    const sessionToken = cookies.sentnl_session;
+
+    if (sessionToken) {
+        try {
+            // Delete the session record from the database
+            await pool.query('DELETE FROM sessions WHERE session_token = $1', [sessionToken]);
+        } catch (err) {
+            console.error('Error deleting session during logout:', err);
+        }
+    }
+
+    // Clear the session cookie from the browser
+    res.clearCookie('sentnl_session');
+    
+    // Redirect user back to home page
+    return res.redirect('/');
 });
 
 const PORT = process.env.PORT || 3000;
