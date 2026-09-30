@@ -773,6 +773,61 @@ function parseCookies(req) {
     return list;
 }
 
+// ==========================================
+// REQUEST ROUTE (Handles Sign-up & Login)
+// ==========================================
+app.post('/auth/magic-link', async (req, res) => {
+    const { email, plan } = req.body;
+
+    if (!email) {
+        return res.status(400).send('Email is required.');
+    }
+
+    try {
+        // Step A: Check if user already exists
+        let userResult = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+        let user;
+
+        if (userResult.rows.length === 0) {
+            // Step B: If user doesn't exist, create them in the database!
+            const newUserResult = await pool.query(
+                'INSERT INTO users (email, created_at) VALUES ($1, NOW()) RETURNING *',
+                [email]
+            );
+            user = newUserResult.rows[0];
+            console.log(`Created new user: ${email} (ID: ${user.id})`);
+        } else {
+            user = userResult.rows[0];
+            console.log(`Found existing user: ${email} (ID: ${user.id})`);
+        }
+
+        // Step C: Generate a secure random token
+        const token = crypto.randomBytes(32).toString('hex');
+        
+        // Step D: Set expiration (15 minutes from now)
+        const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
+
+        // Step E: Store the magic token linked to the user_id
+        await pool.query(
+            'INSERT INTO magic_tokens (user_id, token, expires_at, used) VALUES ($1, $2, $3, FALSE)',
+            [user.id, token, expiresAt]
+        );
+
+        // Step F: Build the magic link URL
+        const magicLink = `http://localhost:3000/auth/verify?token=${token}${plan ? `&plan=${plan}` : ''}`;
+        
+        // TODO: Replace this `console.log` with your actual email sender (e.g., Nodemailer, SendGrid, Resend)
+        console.log(`👉 Magic link for ${email}: ${magicLink}`);
+
+        // Step G: Respond to the frontend
+        return res.status(200).send('Check your email for the login link.');
+
+    } catch (err) {
+        console.error('Error generating magic link:', err);
+        return res.status(500).send('Internal server error.');
+    }
+});
+
 // 10a. Neutral Confirmation Page (Safe from email scanners)
 app.get('/auth/confirm', async (req, res) => {
       const { token, plan } = req.query;
@@ -818,14 +873,15 @@ app.get('/auth/confirm', async (req, res) => {
 });
 
 // 10b. Verify Magic Token & Login
-app.post('/auth/verify', async (req, res) => {
-    const { token, plan } = req.body;
+app.get('/auth/verify', async (req, res) => {
+    const { token, plan } = req.query; // Note: using req.query since links usually come via GET requests
 
     if (!token) {
         return res.status(400).send('Missing login token.');
     }
 
     try {
+        // Find the token in the database
         const tokenResult = await pool.query(
             'SELECT * FROM magic_tokens WHERE token = $1 AND used = FALSE',
             [token]
@@ -839,7 +895,7 @@ app.post('/auth/verify', async (req, res) => {
                 <body class="bg-[#0E1626] text-slate-100 flex items-center justify-center h-screen m-0">
                     <div class="text-center bg-[#131d31] border border-slate-800 p-8 rounded-2xl max-w-md">
                         <h2 class="text-xl font-bold text-red-400 mb-2">Link Expired or Invalid</h2>
-                        <p class="text-slate-400 text-sm mb-4">This magic link has already been used or has expired (15-minute limit).</p>
+                        <p class="text-slate-400 text-sm mb-4">This magic link has already been used or is invalid.</p>
                         <a href="/login" class="text-indigo-400 hover:underline text-sm font-medium">Request a new link</a>
                     </div>
                 </body>
@@ -849,7 +905,7 @@ app.post('/auth/verify', async (req, res) => {
 
         const magicToken = tokenResult.rows[0];
 
-        // Check expiration in JavaScript to bypass database timezone/offset discrepancies
+        // Check expiration
         if (new Date(magicToken.expires_at) < new Date()) {
             return res.status(400).send(`
                 <!DOCTYPE html>
@@ -880,10 +936,11 @@ app.post('/auth/verify', async (req, res) => {
 
         res.cookie('sentnl_session', sessionToken, {
             httpOnly: true,
-            secure: false,
+            secure: false, // Set to true in production with HTTPS
             maxAge: 30 * 24 * 60 * 60 * 1000
         });
 
+        // Redirect based on plan or go to dashboard
         if (plan && (plan === 'agency' || plan === 'scale')) {
             return res.redirect(307, `/create-checkout-session?plan=${plan}`);
         } else {
@@ -892,7 +949,7 @@ app.post('/auth/verify', async (req, res) => {
 
     } catch (err) {
         console.error('Token verification error:', err);
-        res.status(500).send('Internal server error during authentication.');
+        return res.status(500).send('Internal server error during authentication.');
     }
 });
 
