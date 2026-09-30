@@ -41,6 +41,25 @@ const renderHeader = (isLoggedIn = false) => `
     </header>
 `;
 
+async function checkAuth(req) {
+    const cookies = parseCookies(req);
+    const sessionToken = cookies.sentnl_session;
+    if (!sessionToken) return false;
+
+    try {
+        const sessionResult = await pool.query(
+            `SELECT users.id FROM sessions 
+             JOIN users ON sessions.user_id = users.id 
+             WHERE sessions.session_token = $1 AND sessions.expires_at > NOW()`,
+            [sessionToken]
+        );
+        return sessionResult.rows.length > 0;
+    } catch (err) {
+        console.error('Session check error:', err);
+        return false;
+    }
+}
+
 // 1. Landing Page (Home - Repositioned for Agencies & Client-Facing Builders)
 app.get('/', (req, res) => {
     res.send(`
@@ -61,7 +80,7 @@ app.get('/', (req, res) => {
             </script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
-            ${renderHeader()}
+            ${renderHeader(isLoggedIn)}
 
             <!-- Hero Content -->
             <div class="max-w-4xl mx-auto px-6 py-8 text-center my-auto">
@@ -131,7 +150,7 @@ app.get('/how-it-works', (req, res) => {
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
-            ${renderHeader()}
+            ${renderHeader(isLoggedIn)}
 
             <main class="w-full max-w-4xl mx-auto px-6 py-4">
                 <div class="bg-[#131d31] border border-slate-800 rounded-2xl p-8 md:p-12 shadow-2xl">
@@ -189,7 +208,7 @@ app.get('/pricing', (req, res) => {
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
-            ${renderHeader()}
+            ${renderHeader(isLoggedIn)}
 
             <main class="w-full max-w-5xl mx-auto px-6 py-8">
                 <div class="text-center mb-12">
@@ -282,7 +301,7 @@ app.get('/privacy-terms', (req, res) => {
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
-            ${renderHeader()}
+            ${renderHeader(isLoggedIn)}
 
             <main class="w-full max-w-4xl mx-auto px-6 py-4">
                 <div class="bg-[#131d31] border border-slate-800 rounded-2xl p-8 md:p-12 shadow-2xl space-y-6">
@@ -411,7 +430,7 @@ app.get('/contact', (req, res) => {
             </script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0 overflow-hidden">
-            ${renderHeader()}
+            ${renderHeader(isLoggedIn)}
 
             <div class="max-w-md w-full mx-auto text-center bg-[#0E1626] border border-slate-800 p-8 rounded-2xl shadow-xl my-auto px-6">
                 <h1 class="text-3xl md:text-4xl font-extrabold mb-4">Get in Touch</h1>
