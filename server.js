@@ -1083,7 +1083,8 @@ app.post('/create-checkout-session', async (req, res) => {
     const plan = req.body.plan || 'agency';
 
     if (!sessionToken) {
-        return res.redirect('/login');
+        // Send them to register and remember what plan they wanted!
+        return res.redirect(`/register?plan=${plan}`);
     }
 
     try {
