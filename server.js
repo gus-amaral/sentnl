@@ -775,7 +775,7 @@ function parseCookies(req) {
 
 // 10a. Neutral Confirmation Page (Safe from email scanners)
 app.get('/auth/confirm', async (req, res) => {
-      const { token, plan } = req.query;
+    const { token, plan } = req.query;
     if (!token) {
         return res.status(400).send('Missing login token.');
     }
@@ -789,9 +789,6 @@ app.get('/auth/confirm', async (req, res) => {
             <title>Confirm Sign-In - Sentnl</title>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
-        
-        <input type="hidden" name="plan" value="${plan || ''}" />
-
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between h-screen m-0">
             ${renderHeader()}
 
@@ -802,6 +799,7 @@ app.get('/auth/confirm', async (req, res) => {
                 
                 <form action="/auth/verify" method="POST">
                     <input type="hidden" name="token" value="${token}" />
+                    <input type="hidden" name="plan" value="${plan || ''}" />
                     <button 
                         type="submit" 
                         class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-6 py-3 rounded-lg transition-colors cursor-pointer shadow-lg shadow-indigo-600/25 text-sm"
@@ -1002,7 +1000,7 @@ app.post('/monitors', async (req, res) => {
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// 13. Create Stripe Checkout Session for  Tier Upgrade
+// 13. Create Stripe Checkout Session for Tier Upgrade
 app.post('/create-checkout-session', async (req, res) => {
     const cookies = parseCookies(req);
     const sessionToken = cookies.sentnl_session;
@@ -1278,8 +1276,9 @@ app.post('/auth/magic-link', async (req, res) => {
 // ==========================================
 //  VERIFICATION ROUTE (Logs the User In)
 // ==========================================
-app.get('/auth/verify', async (req, res) => {
-    const { token, plan } = req.query; // Using req.query because magic links arrive via GET
+app.all('/auth/verify', async (req, res) => {
+    const token = req.method === 'POST' ? req.body.token : req.query.token;
+    const plan = req.method === 'POST' ? req.body.plan : req.query.plan;
 
     if (!token) {
         return res.status(400).send('Missing login token.');
