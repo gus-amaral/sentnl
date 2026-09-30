@@ -1076,7 +1076,7 @@ app.post('/monitors', async (req, res) => {
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
-// 13. Create Stripe Checkout Session for Agency Tier Upgrade
+// 13. Create Stripe Checkout Session for  Tier Upgrade
 app.post('/create-checkout-session', async (req, res) => {
     const cookies = parseCookies(req);
     const sessionToken = cookies.sentnl_session;
@@ -1099,19 +1099,26 @@ app.post('/create-checkout-session', async (req, res) => {
 
         const user = sessionResult.rows[0];
 
-       const stripeSession = await stripe.checkout.sessions.create({
+       // 1. Dynamically select the correct Price ID based on the form submission
+        const priceId = plan === 'scale' 
+            ? process.env.STRIPE_SCALE_PRICE_ID 
+            : process.env.STRIPE_AGENCY_PRICE_ID;
+
+        // 2. Pass the variable into Stripe instead of the hardcoded string
+        const stripeSession = await stripe.checkout.sessions.create({
             customer_email: user.email,
             line_items: [
                 {
-                    price: 'price_1ULE4dAgLGQWFBWPdctCfkrM', // Your Stripe Price ID
+                    price: priceId, // <--- Using the variable here!
                     quantity: 1,
                 },
             ],
             mode: 'subscription',
-            success_url: `${BASE_URL}/dashboard?upgrade=success`,
-            cancel_url: `${BASE_URL}/dashboard?upgrade=canceled`,
+            success_url: `${BASE_URL}/dashboard?upgrade=success&plan=${plan}`,
+            cancel_url: `${BASE_URL}/pricing?upgrade=canceled`,
             metadata: {
-                user_id: user.id
+                user_id: user.id,
+                plan: plan
             }
         });
 
@@ -1130,14 +1137,17 @@ app.post('/webhook/stripe', express.json(), async (req, res) => {
     if (event.type === 'checkout.session.completed') {
         const stripeSession = event.data.object;
         const userId = stripeSession.metadata.user_id;
+        
+        // Dynamically pull the plan from metadata (defaults to 'agency' if missing)
+        const plan = stripeSession.metadata.plan || 'agency';
 
         if (userId) {
             try {
                 await pool.query(
-                    "UPDATE users SET tier = 'agency' WHERE id = $1",
-                    [userId]
+                    "UPDATE users SET tier = $1 WHERE id = $2",
+                    [plan, userId]
                 );
-                console.log(`Successfully upgraded user ${userId} to agency tier via Stripe!`);
+                console.log(`Successfully upgraded user ${userId} to ${plan} tier via Stripe!`);
             } catch (dbErr) {
                 console.error('Database update error during Stripe webhook:', dbErr);
             }
