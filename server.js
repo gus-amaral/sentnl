@@ -34,10 +34,13 @@ const renderHeader = (isLoggedIn = false) => `
             <a href="/privacy-terms" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
-        ${isLoggedIn 
-            ? `<form action="/logout" method="POST" class="m-0"><button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer border border-slate-700">Sign Out</button></form>`
-            : `<a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>`
-        }
+        <div class="flex items-center gap-4">
+            ${isLoggedIn 
+                ? `<a href="/dashboard" class="text-base font-medium text-indigo-400 hover:text-indigo-300 transition-colors">Dashboard</a>
+                   <form action="/logout" method="POST" class="m-0"><button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer border border-slate-700">Sign Out</button></form>`
+                : `<a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>`
+            }
+        </div>
     </header>
 `;
 
