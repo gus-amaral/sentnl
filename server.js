@@ -1080,6 +1080,7 @@ const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 app.post('/create-checkout-session', async (req, res) => {
     const cookies = parseCookies(req);
     const sessionToken = cookies.sentnl_session;
+    const plan = req.body.plan || 'agency';
 
     if (!sessionToken) {
         return res.redirect('/login');
