@@ -844,10 +844,11 @@ app.get('/dashboard', async (req, res) => {
         const user = sessionResult.rows[0];
 
         // LOCAL TESTING FALLBACK: If redirected back with ?upgrade=success, upgrade instantly
-        if (req.query.upgrade === 'success' && user.tier !== 'agency') {
-            await pool.query("UPDATE users SET tier = 'agency' WHERE id = $1", [user.id]);
-            user.tier = 'agency'; // update local object for immediate render
-            console.log(`Local fallback: Upgraded user ${user.id} to agency tier!`);
+        if (req.query.upgrade === 'success') {
+            const upgradedPlan = req.query.plan === 'scale' ? 'scale' : 'agency';
+            await pool.query("UPDATE users SET tier = $1 WHERE id = $2", [upgradedPlan, user.id]);
+            user.tier = upgradedPlan; // update local object for immediate render
+            console.log(`Local fallback: Upgraded user ${user.id} to ${upgradedPlan} tier!`);
         }
 
         // Fetch all monitors for this user
@@ -1068,8 +1069,8 @@ app.post('/webhook/stripe', express.json(), async (req, res) => {
         const stripeSession = event.data.object;
         const userId = stripeSession.metadata.user_id;
         
-        // Dynamically pull the plan from metadata (defaults to 'agency' if missing)
-        const plan = stripeSession.metadata.plan || 'agency';
+        // Dynamically pull the plan from metadata, defaulting to 'agency' only if nothing is specified
+        const plan = stripeSession.metadata.plan === 'scale' ? 'scale' : 'agency';
 
         if (userId) {
             try {
