@@ -821,12 +821,6 @@ app.get('/auth/confirm', async (req, res) => {
 app.post('/auth/verify', async (req, res) => {
     const { token, plan } = req.body;
 
-    if (plan && (plan === 'agency' || plan === 'scale')) {
-       return res.redirect(307, `/create-checkout-session?plan=${plan}`);
-   } else {
-       return res.redirect('/dashboard');
-   }
-
     if (!token) {
         return res.status(400).send('Missing login token.');
     }
