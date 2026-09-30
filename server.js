@@ -1033,7 +1033,7 @@ app.post('/webhook/stripe', express.json(), async (req, res) => {
     res.json({ received: true });
 });
 
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
