@@ -509,6 +509,16 @@ app.post('/signup', async (req, res) => {
                     </div>
 
                     <p style="font-size: 14px; color: #cbd5e1;"><strong>Current Rule:</strong> Alerts if the <code>output</code> field is empty or triggers AI refusal patterns (<code>no_apologies</code>).</p>
+
+                    <hr style="border: none; border-top: 1px solid #334155; margin: 24px 0;" />
+
+                    <h3 style="color: #818cf8; font-size: 16px; margin-bottom: 8px;">Quick Setup Guide 🛠️</h3>
+                    <ol style="padding-left: 20px; font-size: 14px; color: #cbd5e1; line-height: 1.5;">
+                        <li style="margin-bottom: 8px;">Open your AI automation builder (e.g., <strong>Zapier, Make, or n8n</strong>).</li>
+                        <li style="margin-bottom: 8px;">Add a new Action step at the <strong>very end</strong> of your workflow configured as an <strong>HTTP POST request</strong>.</li>
+                        <li style="margin-bottom: 8px;">Paste your unique webhook URL above as the target endpoint.</li>
+                        <li>Ensure your final step payload passes the AI text output so Sentnl can monitor it properly.</li>
+                    </ol>
                 </div>
             `
         });
