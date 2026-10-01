@@ -147,6 +147,13 @@ app.get('/', async (req, res) => {
             </div>
 
             <div class="py-2"></div>
+            <footer>
+                <div style="display: flex; justify-content: center; width: 100%;">
+                    <a href="https://codehype.ai/product/sentnl-ai-pipeline-monitor?utm_source=codehype_badge" target="_blank" rel="noopener noreferrer">
+                         <img src="https://codehype.ai/badges/sentnl-ai-pipeline-monitor.svg?variant=find-us&v=20" alt="Featured on CodeHype" width="180" height="65" loading="lazy" decoding="async" style="display:inline-block;border:0;width:100%;max-width:180px;height:auto;max-height:65px;" />
+                    </a>
+                </div>
+            </footer>
         </body>
         </html>
     `);
