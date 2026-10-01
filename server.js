@@ -685,7 +685,14 @@ app.post('/webhook/:secret', async (req, res) => {
                 html: `
                     <div style="font-family: sans-serif; max-width: 550px; margin: auto; padding: 24px; background: #0e1626; color: #f8fafc; border-radius: 8px; border: 1px solid #ef4444;">
                         <h2 style="color: #ef4444; margin-top: 0;">AI Quality Guardrail Triggered ⚠️</h2>
-                        <p>${errorMessage}</p>
+                        <p style="font-size: 15px; color: #cbd5e1;">${errorMessage}</p>
+                        
+                        <div style="margin-top: 20px;">
+                            <p style="font-size: 13px; font-weight: bold; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;">Received Payload Output:</p>
+                            <div style="background: #131d31; padding: 12px 16px; border-radius: 6px; border: 1px solid #334155; font-family: monospace; font-size: 13px; word-break: break-all; color: #f8fafc; max-height: 200px; overflow-y: auto;">
+                                ${typeof payload === 'object' ? JSON.stringify(payload, null, 2) : payload}
+                            </div>
+                        </div>
                     </div>
                 `
             });
