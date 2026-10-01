@@ -26,20 +26,47 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Shared Header Component with Centered White Menu Links
 const renderHeader = (isLoggedIn = false) => `
-    <header class="w-full px-6 md:px-12 py-2 flex justify-between items-center">
-        <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" /></a>
-        <nav class="flex items-center gap-8 mx-auto">
+    <header class="w-full px-4 md:px-12 py-3 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 border-b border-slate-800/60 md:border-none">
+        <!-- Top row on mobile / Left side on desktop: Logo & Action Button -->
+        <div class="w-full md:w-auto flex justify-between items-center">
+            <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 md:h-20 object-contain" /></a>
+            
+            <!-- Mobile Action Button (Visible only on small screens) -->
+            <div class="flex md:hidden items-center gap-2">
+                ${isLoggedIn 
+                    ? `<a href="/dashboard" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25">Dashboard</a>
+                       <form action="/logout" method="POST" class="m-0"><button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-3 py-1.5 rounded-lg text-xs transition-colors cursor-pointer border border-slate-700">Sign Out</button></form>`
+                    : `<a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-3 py-1.5 rounded-lg text-xs transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>`
+                }
+            </div>
+        </div>
+
+        <!-- Navigation Links (Hidden on mobile, visible on desktop) -->
+        <nav class="hidden md:flex items-center gap-8 mx-auto">
             <a href="/how-it-works" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">How it works</a>
             <a href="/pricing" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Pricing</a>
             <a href="/privacy-terms" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
-        <div class="flex items-center gap-3">
-            ${isLoggedIn 
-                ? `<a href="/dashboard" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Dashboard</a>
-                   <form action="/logout" method="POST" class="m-0"><button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer border border-slate-700">Sign Out</button></form>`
-                : `<a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>`
-            }
+
+        <!-- Mobile Nav Links row or Desktop Action Buttons -->
+        <div class="w-full md:w-auto flex flex-wrap justify-center md:justify-end items-center gap-4">
+            <!-- Secondary mobile links row so mobile users can still reach Pricing/How it works -->
+            <div class="flex md:hidden items-center gap-4 text-xs text-slate-300">
+                <a href="/how-it-works" class="hover:text-indigo-400 transition-colors">How it works</a>
+                <a href="/pricing" class="hover:text-indigo-400 transition-colors">Pricing</a>
+                <a href="/privacy-terms" class="hover:text-indigo-400 transition-colors">Privacy</a>
+                <a href="/contact" class="hover:text-indigo-400 transition-colors">Contact</a>
+            </div>
+
+            <!-- Desktop Action Buttons (Hidden on mobile, visible on medium+ screens) -->
+            <div class="hidden md:flex items-center gap-3">
+                ${isLoggedIn 
+                    ? `<a href="/dashboard" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Dashboard</a>
+                       <form action="/logout" method="POST" class="m-0"><button type="submit" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold px-4 py-2 rounded-lg text-sm transition-colors cursor-pointer border border-slate-700">Sign Out</button></form>`
+                    : `<a href="/login" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors shadow-lg shadow-indigo-600/25">Sign In</a>`
+                }
+            </div>
         </div>
     </header>
 `;
