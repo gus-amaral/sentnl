@@ -26,17 +26,30 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Shared Header Component with Centered White Menu Links
 const renderHeader = (isLoggedIn = false) => `
-    <header class="relative w-full px-6 md:px-12 py-2 flex justify-between items-center">
-        <a href="/">
-            <img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-20 object-contain" />
-        </a>
+    <header class="w-full px-4 md:px-12 py-3 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 border-b border-slate-800/60 md:border-none">
+        <!-- Top row on mobile / Left side on desktop: Logo & Action Button -->
+        <div class="w-full md:w-auto flex justify-between items-center">
+            <a href="/"><img src="/logo_dark_background.png" alt="Sentnl Logo" class="h-14 md:h-20 object-contain" /></a>
+        </div>
 
-        <nav class="absolute left-1/2 -translate-x-1/2 flex items-center gap-8">
+        <!-- Navigation Links (Hidden on mobile, visible on desktop) -->
+        <nav class="hidden md:flex items-center gap-8 mx-auto">
             <a href="/" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Home</a>
             <a href="/how-it-works" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">How it works</a>
             <a href="/privacy-terms" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
             <a href="/contact" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
+
+        <!-- Mobile Nav Links row or Desktop Action Buttons -->
+        <div class="w-full md:w-auto flex flex-wrap justify-center md:justify-end items-center gap-4">
+            <!-- Secondary mobile links row so mobile users can still reach Pricing/How it works -->
+            <div class="flex md:hidden items-center gap-4 text-xs text-slate-300">
+                <a href="/" class="hover:text-indigo-400 transition-colors">Home</a>
+                <a href="/how-it-works" class="hover:text-indigo-400 transition-colors">How it works</a>
+                <a href="/privacy-terms" class="hover:text-indigo-400 transition-colors">Privacy</a>
+                <a href="/contact" class="hover:text-indigo-400 transition-colors">Contact</a>
+            </div>
+        </div>
     </header>
 `;
 
