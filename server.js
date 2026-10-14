@@ -736,7 +736,7 @@ app.post('/webhook/:secret', async (req, res) => {
             });
         }
 
-        return res.status(200).json({ status: 'received', validation: status, rule: ruleType });
+        return res.status(200).json({ status: 'received', validation: status, checks: 'all' });
 
     } catch (err) {
         console.error('Webhook processing error:', err);
