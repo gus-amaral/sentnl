@@ -670,8 +670,8 @@ app.post('/webhook/:secret', async (req, res) => {
             status = 'failed';
             errorMessages.push(`Validation failed: Field '${targetField}' was empty or missing.`);
         } else {
-            const textValue = String(fieldValue);
-            const lowerTextValue = textValue.toLowerCase();
+            const rawTextValue = String(fieldValue);
+            const lowerTextValue = rawTextValue.toLowerCase();
 
             // 2. Check for LLM refusal patterns ("no_apologies")
             const refusalPatterns = [
@@ -694,7 +694,7 @@ app.post('/webhook/:secret', async (req, res) => {
             }
 
             // 3. Check for JSON syntax corruption ("valid_json")
-            let jsonCleanValue = textValue.trim();
+            let jsonCleanValue = rawTextValue.trim();
             if (jsonCleanValue.startsWith('```')) {
                 jsonCleanValue = jsonCleanValue.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
             }
