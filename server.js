@@ -649,21 +649,21 @@ app.post('/webhook/:secret', async (req, res) => {
         );
 
         const targetField = monitor.target_field || 'output';
-        const ruleType = monitor.rule_type || 'not_empty';
         const fieldValue = payload[targetField];
 
         let status = 'success';
-        let errorMessage = null;
+        let errorMessages = [];
 
-        if (ruleType === 'not_empty') {
-            const isEmpty = fieldValue === undefined || fieldValue === null || String(fieldValue).trim() === '';
-            if (isEmpty) {
-                status = 'failed';
-                errorMessage = `Validation failed: Field '${targetField}' was empty or missing.`;
-            }
-        } 
-        else if (ruleType === 'no_apologies') {
-            const textValue = String(fieldValue || '').toLowerCase();
+        // 1. Check if empty or missing
+        const isEmpty = fieldValue === undefined || fieldValue === null || String(fieldValue).trim() === '';
+        if (isEmpty) {
+            status = 'failed';
+            errorMessages.push(`Validation failed: Field '${targetField}' was empty or missing.`);
+        } else {
+            const rawTextValue = String(fieldValue);
+            const lowerTextValue = rawTextValue.toLowerCase();
+
+            // 2. Check for LLM refusal patterns ("no_apologies")
             const refusalPatterns = [
                 /\bsor+y\b/i,
                 /apolog(?:y|ies|ize|izing)/i,
@@ -677,35 +677,29 @@ app.post('/webhook/:secret', async (req, res) => {
                 /invalid\s+json/i
             ];
             
-            const matchedPattern = refusalPatterns.find(regex => regex.test(textValue));
+            const matchedPattern = refusalPatterns.find(regex => regex.test(lowerTextValue));
             
             if (matchedPattern) {
+                // If it's a refusal, it's a soft failure. We don't need to parse it as JSON.
                 status = 'failed';
-                errorMessage = `Soft failure detected: Output matched LLM refusal pattern (${matchedPattern}).`;
-            } else if (fieldValue === undefined || fieldValue === null || String(fieldValue).trim() === '') {
-                status = 'failed';
-                errorMessage = `Validation failed: Field '${targetField}' was empty or missing.`;
-            }
-        }
-
-        else if (ruleType === 'valid_json') {
-            if (fieldValue === undefined || fieldValue === null || String(fieldValue).trim() === '') {
-                status = 'failed';
-                errorMessage = `Validation failed: Field '${targetField}' was empty or missing.`;
+                errorMessages.push(`Soft failure detected: Output matched LLM refusal pattern (${matchedPattern}).`);
             } else {
-                let textValue = String(fieldValue).trim();
-                if (textValue.startsWith('```')) {
-                    textValue = textValue.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+                // 3. Check for JSON syntax corruption ("valid_json") only if it's NOT a refusal
+                let jsonCleanValue = rawTextValue.trim();
+                if (jsonCleanValue.startsWith('```')) {
+                    jsonCleanValue = jsonCleanValue.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
                 }
 
                 try {
-                    JSON.parse(textValue);
+                    JSON.parse(jsonCleanValue);
                 } catch (jsonErr) {
                     status = 'failed';
-                    errorMessage = `JSON syntax corruption detected: Field '${targetField}' contains malformed or invalid JSON (${jsonErr.message}).`;
+                    errorMessages.push(`JSON syntax corruption detected: Field '${targetField}' contains malformed or invalid JSON (${jsonErr.message}).`);
                 }
             }
         }
+
+        const errorMessage = errorMessages.length > 0 ? errorMessages.join(' | ') : null;
 
         const logQuery = `
             INSERT INTO logs (monitor_id, status, payload_received, error_message) 
@@ -734,7 +728,7 @@ app.post('/webhook/:secret', async (req, res) => {
             });
         }
 
-        return res.status(200).json({ status: 'received', validation: status, rule: ruleType });
+        return res.status(200).json({ status: 'received', validation: status, checks: 'all' });
 
     } catch (err) {
         console.error('Webhook processing error:', err);
