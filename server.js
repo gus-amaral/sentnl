@@ -688,6 +688,25 @@ app.post('/webhook/:secret', async (req, res) => {
             }
         }
 
+        else if (ruleType === 'valid_json') {
+            if (fieldValue === undefined || fieldValue === null || String(fieldValue).trim() === '') {
+                status = 'failed';
+                errorMessage = `Validation failed: Field '${targetField}' was empty or missing.`;
+            } else {
+                let textValue = String(fieldValue).trim();
+                if (textValue.startsWith('```')) {
+                    textValue = textValue.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+                }
+
+                try {
+                    JSON.parse(textValue);
+                } catch (jsonErr) {
+                    status = 'failed';
+                    errorMessage = `JSON syntax corruption detected: Field '${targetField}' contains malformed or invalid JSON (${jsonErr.message}).`;
+                }
+            }
+        }
+
         const logQuery = `
             INSERT INTO logs (monitor_id, status, payload_received, error_message) 
             VALUES ($1, $2, $3, $4);
