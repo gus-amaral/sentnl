@@ -688,22 +688,24 @@ app.post('/webhook/:secret', async (req, res) => {
             ];
             
             const matchedPattern = refusalPatterns.find(regex => regex.test(lowerTextValue));
+            
             if (matchedPattern) {
+                // If it's a refusal, it's a soft failure. We don't need to parse it as JSON.
                 status = 'failed';
                 errorMessages.push(`Soft failure detected: Output matched LLM refusal pattern (${matchedPattern}).`);
-            }
+            } else {
+                // 3. Check for JSON syntax corruption ("valid_json") only if it's NOT a refusal
+                let jsonCleanValue = rawTextValue.trim();
+                if (jsonCleanValue.startsWith('```')) {
+                    jsonCleanValue = jsonCleanValue.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+                }
 
-            // 3. Check for JSON syntax corruption ("valid_json")
-            let jsonCleanValue = rawTextValue.trim();
-            if (jsonCleanValue.startsWith('```')) {
-                jsonCleanValue = jsonCleanValue.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
-            }
-
-            try {
-                JSON.parse(jsonCleanValue);
-            } catch (jsonErr) {
-                status = 'failed';
-                errorMessages.push(`JSON syntax corruption detected: Field '${targetField}' contains malformed or invalid JSON (${jsonErr.message}).`);
+                try {
+                    JSON.parse(jsonCleanValue);
+                } catch (jsonErr) {
+                    status = 'failed';
+                    errorMessages.push(`JSON syntax corruption detected: Field '${targetField}' contains malformed or invalid JSON (${jsonErr.message}).`);
+                }
             }
         }
 
