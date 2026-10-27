@@ -103,6 +103,7 @@ app.get('/', async (req, res) => {
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>AI pipeline monitoring for AI Agencies & Builders</title>
+            <description>Get alerted when AI workflows in Make, Zapier or n8n return empty, refused or invalid output while still saying 'Success'. Free up to 500 runs/month.</description>
             <script src="https://cdn.tailwindcss.com"></script>
             <!-- Google tag (gtag.js) -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
@@ -182,7 +183,8 @@ app.get('/how-it-works', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>How It Works - Sentnl</title>
+            <title>How Sentnl Works: Webhook Monitoring for Make, Zapier & n8n</title>
+            <description>Add one webhook to the end of your AI workflow. Sentnl catches empty outputs, refusals and invalid JSON, then emails you the exact payload.</description>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
@@ -243,7 +245,8 @@ app.get('/pricing', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Pricing - Sentnl</title>
+            <title>Pricing: AI Pipeline Monitoring, Free up to 500/month</title>
+            <description>Start free with 500 monitored transactions a month, no credit card. Upgrade as your agency's AI workflows scale.</description>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
@@ -338,7 +341,8 @@ app.get('/privacy-terms', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Privacy Policy - Sentnl</title>
+            <title>Privacy Policy & Terms of Service | Sentnl</title>
+            <description>How Sentnl collects, stores and protects the workflow data you send to your monitoring webhook, plus the terms for using the service.</description>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
@@ -461,7 +465,8 @@ app.get('/about', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>About - Sentnl</title>
+            <title>About Sentnl and Its Founder</title>
+            <description>Sentnl was built after an AI workflow failed silently for almost two weeks. Meet the founder, a 12+ year enterprise delivery veteran, and see how your data is handled. </description>
             <script src="https://cdn.tailwindcss.com"></script>
         </head>
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
@@ -517,7 +522,8 @@ app.get('/contact', async (req, res) => {
         <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Contact Us - Sentnl</title>
+            <title>Contact Sentnl | Support & Webhook Setup Help</title>
+            <description>Questions, feature requests, or need help adding the Sentnl webhook to your Make, Zapier or n8n workflow? Email contact@sentnl.tech.</description>
             <script src="https://cdn.tailwindcss.com"></script>
             <!-- Google tag (gtag.js) -->
             <script async src="https://www.googletagmanager.com/gtag/js?id=G-5HQ8Q06EF6"></script>
