@@ -26,6 +26,17 @@ const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
 
 // Shared Header Component with Centered White Menu Links
 const renderHeader = (isLoggedIn = false) => `
+    <script src="https://esm.sh/@heycatch/sdk" async></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            if (window.analytics && typeof window.analytics.init === 'function') {
+                window.analytics.init({
+                    projectKey: 'hck_pk_KoOlow9WQYVRrV9ckBJ_BxKhlSi1z4jw'
+                });
+            }
+        });
+    </script>
+    
     <header class="w-full px-4 md:px-12 py-3 flex flex-col md:flex-row justify-between items-center gap-4 md:gap-0 border-b border-slate-800/60 md:border-none">
         <!-- Top row on mobile / Left side on desktop: Logo & Action Button -->
         <div class="w-full md:w-auto flex justify-between items-center">
