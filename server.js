@@ -456,7 +456,7 @@ app.get('/about', async (req, res) => {
         <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
             ${renderHeader(isLoggedIn)}
 
-            <main class="w-full max-w-4xl mx-auto px-6 py-8">
+            <main class="w-full max-w-4xl mx-auto px-6 py-4">
                 <div class="bg-[#131d31] border border-slate-800 rounded-2xl p-8 md:p-12 shadow-2xl space-y-8">
                     <h1 class="text-3xl md:text-4xl font-extrabold mb-6">About Sentnl</h1>
 
