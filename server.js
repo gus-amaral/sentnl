@@ -37,6 +37,7 @@ const renderHeader = (isLoggedIn = false) => `
             <a href="/" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Home</a>
             <a href="/how-it-works" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">How it works</a>
             <a href="/privacy-terms" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Privacy & Terms</a>
+            <a href="/about" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">About</a> 
             <a href="/contact" class="text-base font-medium text-white hover:text-indigo-400 transition-colors">Contact</a>
         </nav>
 
@@ -47,6 +48,7 @@ const renderHeader = (isLoggedIn = false) => `
                 <a href="/" class="hover:text-indigo-400 transition-colors">Home</a>
                 <a href="/how-it-works" class="hover:text-indigo-400 transition-colors">How it works</a>
                 <a href="/privacy-terms" class="hover:text-indigo-400 transition-colors">Privacy</a>
+                 <a href="/about" class="hover:text-indigo-400 transition-colors">About</a>
                 <a href="/contact" class="hover:text-indigo-400 transition-colors">Contact</a>
             </div>
         </div>
@@ -428,6 +430,62 @@ app.get('/privacy-terms', async (req, res) => {
                         <p class="text-indigo-400 text-base font-semibold">
                             <a href="mailto:contact@sentnl.tech" class="hover:underline">contact@sentnl.tech</a>
                         </p>
+                    </section>
+                </div>
+            </main>
+
+            <div class="py-2"></div>
+        </body>
+        </html>
+    `);
+});
+
+// About page route
+app.get('/about', async (req, res) => {
+    const isLoggedIn = await checkAuth(req);
+
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>About - Sentnl</title>
+            <script src="https://cdn.tailwindcss.com"></script>
+        </head>
+        <body class="bg-[#0E1626] text-slate-100 font-sans antialiased flex flex-col justify-between min-h-screen m-0">
+            ${renderHeader(isLoggedIn)}
+
+            <main class="w-full max-w-4xl mx-auto px-6 py-8">
+                <div class="bg-[#131d31] border border-slate-800 rounded-2xl p-8 md:p-12 shadow-2xl space-y-8">
+                    <h1 class="text-3xl md:text-4xl font-extrabold mb-6">About Sentnl</h1>
+
+                    <!-- Company Story -->
+                    <section class="space-y-4">
+                        <h2 class="text-indigo-400 font-semibold text-xl">Company story</h2>
+                        <p class="text-slate-300 text-base leading-relaxed">
+                            It took me almost two weeks to realize my renewal manager workflow had produced an empty output. Nothing crashed. Nothing alerted. Luckily, it was my own workflow. But then it hit me: what if it had been a client’s? 
+                        </p>
+                        
+                    </section>
+
+                    <!-- Independent & Data Privacy -->
+                    <section class="space-y-4">
+                        <h2 class="text-indigo-400 font-semibold text-xl">Independent, and careful with your data</h2>
+                        <p class="text-slate-300 text-base leading-relaxed">
+                            Sentnl is founder-built and independent. When you send a payload, we store it for 7 days and then delete it. <b>We never sell your data. </b> Read the <a href="/privacy-terms" class="text-indigo-400 hover:underline">privacy policy</a>.
+                        </p>
+                    </section>
+
+                    <!-- Founder Section -->
+                    <section class="space-y-4">
+                        <h2 class="text-indigo-400 font-semibold text-xl">About the founder</h2>
+                        <div class="bg-[#0e1626] border border-slate-800 rounded-xl p-6 flex flex-col md:flex-row items-center md:items-start gap-6">
+                            <img src="/images/headshot.jpeg" alt="Gus Amaral" class="w-[110px] h-[110px] rounded-full object-cover border-2 border-slate-700 shrink-0 shadow-lg">
+                            <p class="text-slate-300 text-base leading-relaxed italic m-0">
+                                “Hi, I’m Gus Amaral. I’ve spent 12+ years delivering enterprise technology programs. Through new developments, automations and migrations, I learned that a status that says “green” and a result that’s actually right can be two different things.”
+                            </p>
+                        </div>
                     </section>
                 </div>
             </main>
