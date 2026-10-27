@@ -208,7 +208,7 @@ app.get('/how-it-works', async (req, res) => {
                         </div>
                         <div class="bg-[#0e1626] p-6 rounded-xl border border-slate-800">
                             <strong class="text-indigo-400 block mb-2 font-semibold text-lg">3. Automated Vigilance</strong>
-                            We monitor for empty blocks or soft failures and email you immediately if a fix is required.
+                            We monitor for empty blocks, refusals, invalid JSON and email you immediately.
                         </div>
                     </div>
 
@@ -216,6 +216,7 @@ app.get('/how-it-works', async (req, res) => {
                     <ul class="list-disc pl-6 text-slate-300 text-base space-y-3 mb-8">
                         <li><strong class="text-white">Empty / Missing Outputs:</strong> Instantly catches cases where your LLM returns a blank response or the target text field is missing.</li>
                         <li><strong class="text-white">AI Refusal Patterns ("No-Apologies" Rule):</strong> Automatically scans text responses for common model guardrail failures, software limits, or safety refusals (e.g., phrases like <em>"As an AI..."</em>, <em>"I am unable to fulfill..."</em>, token limits exceeded, or API errors).</li>
+                        <li><strong class="text-white">Invalid JSON:</strong> Malformed data payloads, Broken syntax outputs, Unparseable AI data </li>
                         <li><strong class="text-white">Instant Alerting:</strong> Triggers an immediate notification email containing the exact payload and error message so you can diagnose issues quickly.</li>
                     </ul>
 

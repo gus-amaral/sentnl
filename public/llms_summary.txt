@@ -1,0 +1,24 @@
+# Sentnl
+
+> Automated workflow output monitoring for low-code automation platforms and custom webhook pipelines.
+
+## Overview
+Sentnl monitors the output quality and integrity of automated workflows on platforms like Make, Zapier, n8n, and custom backend APIs. Unlike traditional uptime monitors that only check if a server responded with HTTP 200, Sentnl evaluates the actual payload content to catch empty responses, corrupted outputs, missing fields, or unexpected data structures before they affect downstream users or clients.
+
+## Key Features
+- **Output-Level Monitoring:** Triggers alerts when output payloads look malformed, incomplete, or wrong, even if the workflow status shows "success."
+- **Universal Webhook Integration:** Easy setup by adding a final webhook step to any automated workflow.
+- **Privacy-First Data Retention:** Payloads are stored strictly for 7 days for troubleshooting before being automatically and permanently deleted.
+- **Instant Email Alerts:** Immediate notification when an output anomaly is detected.
+
+## Target Audience
+- Automation Engineers & Operations Consultants
+- Agencies managing client workflows on Make, Zapier, or n8n
+- Developers relying on asynchronous background tasks and webhooks
+
+## Primary URLs
+- **Homepage:** https://sentnl.tech/
+- **How It Works:** https://sentnl.tech/how-it-works
+- **Pricing:** https://sentnl.tech/pricing
+- **About Sentnl:** https://sentnl.tech/about
+- **Privacy & Terms:** https://sentnl.tech/privacy-terms
