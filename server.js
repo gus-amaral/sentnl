@@ -126,7 +126,7 @@ app.get('/', async (req, res) => {
                     Protect Your Client Retainers From Silent AI Failures.
                 </h1>
                 <p class="text-base md:text-lg text-slate-400 mb-8 max-w-xl mx-auto">
-                    When your client's automated AI workflows break or return empty responses, you shouldn't have to find out from an angry email. Catch soft failures instantly before your reputation takes a hit.
+                    Sentnl is a monitoring tool for AI automation workflows. It catches silent failures, invalid outputs completed as "Success" before your clients notice. Catch soft failures instantly before your reputation takes a hit.
                 </p>
 
                 <form action="/signup" method="POST" class="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto mb-6">
