@@ -1066,7 +1066,7 @@ app.get('/dashboard', async (req, res) => {
         );
         const monitors = monitorsResult.rows.rows || monitorsResult.rows;
 
-        const tierLimits = { free: 500, agency: 10000, scale: 50000 };
+        const tierLimits = { free: 500, partner: 2000, agency: 10000, scale: 100000 };
         const maxLimit = tierLimits[user.tier] || 500;
         const usagePercent = Math.min(Math.round((user.webhook_count / maxLimit) * 100), 100);
 
