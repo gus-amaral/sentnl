@@ -1506,6 +1506,11 @@ app.post('/logout', async (req, res) => {
     return res.redirect('/');
 });
 
+// Keep awake route
+app.get('/healthz', (req, res) => {
+  res.status(200).send('OK');
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
